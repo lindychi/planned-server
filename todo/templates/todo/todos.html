@@ -1,0 +1,23 @@
+<ul>
+{% for t in todos %}
+    <li>
+        <span {% if t.complete %}style="text-decoration: line-through; color:gray;" class="complete"{% else %}class="incomplete"{% endif %}>
+            {{ t.name }}
+            <div class="todo_menu_div">
+            <button class="complete_button" name="{{ t.id }}">{% if t.complete %}미완료 처리{% else %}완료 처리{% endif %}</button>
+            <button class="add_todo" name="{{ t.id }}">하위 할일 추가</button>
+            <form class="add_todo_form" method="POST" action="{% url 'todo:add_lower_todo' %}">
+                {% csrf_token %}
+                <input type="hidden" name="tid" value="{{ t.id }}">
+                <input type="text" name="name" />
+                <input class="add_todo_submit" type="submit" value="항목 추가" />
+            </form>
+            <button class="delete_todo" name="{{ t.id }}">할일 삭제</button>
+        </div>
+        </span>
+        {% if t.get_child %}
+            {% include 'todo/todos.html' with todos=t.get_child %}
+        {% endif %}
+    </li>
+{% endfor %}
+</ul>

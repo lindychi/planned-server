@@ -1,0 +1,160 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'todo/index.css' %}">
+{% endblock %}
+
+{% block body %} 
+<h1>{% if parent %}{{ parent }}{% else %}할일의 리스트{% endif %}</h1>
+<button id="complete_display_toggle">완료한일 가리기</button></br>
+<div class="todo_menu_div">
+<button class="add_todo" name="{{ t.id }}">하위 할일 추가</button>
+<form class="add_todo_form d-inline-block" method="POST" action="{% url 'todo:add_lower_todo' %}">
+    {% csrf_token %}
+    <input type="text" name="name" />
+    <input class="add_todo_submit" type="submit" value="항목 추가" />
+</form>
+</div>
+
+{% include "todo/todos.html" with todos=todos %}
+
+{% endblock %}
+
+{% block prevscript %}
+<script>
+    $('.delete_todo').click(function() {
+        var tid = $(this).attr('name')
+        var li = $(this).parent().parent()
+        $.ajax({
+            type: "POST",
+            url: "{% url 'todo:delete_todo' %}",
+            data: {
+                'tid': tid,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            dataType: "json",
+            success: function(response){
+                if (li.siblings().length == 0)
+                {
+                    li.parent().remove()
+                }
+                else
+                {
+                    li.remove();
+                }
+            },
+            error: function (request, status, error) {
+                alert(request);
+                alert(status);
+                alert(error);
+            }
+        })
+    })
+
+    $('.complete_button').click(function (){
+        var button = $(this);
+        var tid = $(this).attr('name');
+        $.ajax({
+            type: "POST",
+            url: "{% url 'todo:complete_todo' %}",
+            data: {
+                'tid': tid,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            dataType: "json",
+            success: function(response){
+                if (response.complete)
+                {
+                    button.html("미완료 처리");
+                    button.parent().parent().css({"color":"gray", "text-decoration":"line-through"});
+                    button.parent().parent().addClass('complete')
+                    button.parent().parent().removeClass('incomplete')
+                    if ($('#complete_display_toggle').html() == '완료한일 보이기')
+                    {
+                        button.parent().parent().parent().hide()
+                    }
+                }
+                else 
+                {
+                    button.html("완료 처리");
+                    button.parent().parent().css({"color":"black", "text-decoration":"none"});
+                    button.parent().parent().addClass('incomplete')
+                    button.parent().parent().removeClass('complete')
+                }
+            },
+            error: function (request, status, error) {
+                alert(request);
+                alert(status);
+                alert(error);
+            }
+        })
+    });
+
+    $('.add_todo').click(function () {
+        $(this).next().show();
+    })
+
+    function toggle_show_todo_complete() {
+        var show_todo_complete = true;
+        if ($('#complete_display_toggle').html() == '완료한일 가리기')
+        {
+            $('#complete_display_toggle').html('완료한일 보이기')
+            $('.complete').parent().hide()
+            show_todo_complete = false;
+        }
+        else
+        {
+            $('#complete_display_toggle').html('완료한일 가리기')
+            $('.complete').parent().show()
+        }
+        
+        return show_todo_complete
+    }
+
+    $('#complete_display_toggle').click(function() {
+        var show_todo_complete = toggle_show_todo_complete();
+
+        $.ajax({
+            type: "POST",
+            url: "{% url 'config:ajax_show_todo_complete' %}",
+            data: {
+                'show_todo_complete': show_todo_complete,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            dataType: "json",
+            success: function(response) {
+                alert(response)
+            }
+        })
+    })
+
+    {% if not config.show_todo_complete %}
+    $(document).ready(function() {
+        toggle_show_todo_complete();
+    })
+    {% endif %}
+
+    {% comment %} $('.add_todo_submit').click(function (){
+        var button = $(this);
+        var form = $(this).parent();
+        var text = $(this).prev();
+        var tid = text.prev();
+
+        if (text.val().length > 0) {
+            $.ajax({
+                type: "POST",
+                url: "{% url 'todo:add_todo' %}",
+                data: {
+                    'tid': tid.val(),
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                    'name': text.val()
+                },
+                dataType: "json",
+                success: function(response) {
+                }
+            })
+        }
+    }) {% endcomment %}
+</script>
+{% endblock %}
