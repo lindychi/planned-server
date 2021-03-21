@@ -14,23 +14,50 @@
             </a>
             {% endif %}
         {% endif %}
-        <span {% if t.complete %}style="text-decoration: line-through; color:gray;" class="complete"{% else %}class="incomplete"{% endif %}>
+        <span class="complete_button" name="{{ t.id }}">
+            {% if t.complete %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                    <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+                </svg>
+            {% else %}
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+            </svg>
+            {% endif %}
+        </span>
+        <span {% if t.complete %}style="text-decoration: line-through; color:gray;" class="complete"{% else %}class="incomplete{% if t.last_schedule and not t.last_schedule.is_end %} text-primary font-weight-bold{% endif %}"{% endif %}>
             {{ t.name }}
             <div class="todo_menu_div">
             {% if t.last_schedule and not t.last_schedule.is_end %}
-            <a href="{% url 'todo:end_last_schedule' t.id %}" class="btn btn-primary btn-sm">일정 종료</a>
+            <a href="{% url 'todo:end_last_schedule' t.id %}" class="btn btn-primary btn-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-skip-end-fill" viewBox="0 0 16 16">
+                    <path d="M12.5 4a.5.5 0 0 0-1 0v3.248L5.233 3.612C4.693 3.3 4 3.678 4 4.308v7.384c0 .63.692 1.01 1.233.697L11.5 8.753V12a.5.5 0 0 0 1 0V4z"/>
+                </svg>
+            </a>
             {% else %}
-            <a href="{% url 'todo:add_new_schedule' t.id %}" class="btn btn-primary btn-sm">새 일정 시작</a>
+            <a href="{% url 'todo:add_new_schedule' t.id %}" class="btn btn-primary btn-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-skip-start-fill" viewBox="0 0 16 16">
+                    <path d="M4 4a.5.5 0 0 1 1 0v3.248l6.267-3.636c.54-.313 1.232.066 1.232.696v7.384c0 .63-.692 1.01-1.232.697L5 8.753V12a.5.5 0 0 1-1 0V4z"/>
+                </svg>
+            </a>
             {% endif %}
-            <button class="complete_button" name="{{ t.id }}">{% if t.complete %}미완료 처리{% else %}완료 처리{% endif %}</button>
-            <button class="add_todo" name="{{ t.id }}">하위 할일 추가</button>
+            <button class="add_todo btn btn-primary btn-sm" name="{{ t.id }}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-return-right" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M1.5 1.5A.5.5 0 0 0 1 2v4.8a2.5 2.5 0 0 0 2.5 2.5h9.793l-3.347 3.346a.5.5 0 0 0 .708.708l4.2-4.2a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 8.3H3.5A1.5 1.5 0 0 1 2 6.8V2a.5.5 0 0 0-.5-.5z"/>
+                </svg>
+            </button>
             <form class="add_todo_form" method="POST" action="{% url 'todo:add_lower_todo' %}">
                 {% csrf_token %}
                 <input type="hidden" name="tid" value="{{ t.id }}">
                 <input type="text" name="name" />
                 <input class="add_todo_submit" type="submit" value="항목 추가" />
             </form>
-            <button class="delete_todo" name="{{ t.id }}">할일 삭제</button>
+            <button class="delete_todo btn btn-danger btn-sm" name="{{ t.id }}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                </svg>
+            </button>
         </div>
         </span>
         {% if t.get_child %}

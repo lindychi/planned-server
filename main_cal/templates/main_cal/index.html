@@ -4,16 +4,16 @@
 {% block css %}
 <link rel="stylesheet" href="{% static 'todo/index.css' %}">
 <!-- TUI Calender -->
-<link rel="stylesheet" type="text/css" href="{% static 'main_cal/css/tui-calendar.min.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'main_cal/css/tui-calendar.css' %}" />
 <!-- If you use the default popups, use this. -->
 <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css" />
 <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css" />
 {% comment %} <link rel="stylesheet" type="text/css" href="/resources/js/calendar/tui-calendar/examples/css/icons.css" /> {% endcomment %}
 <!-- TUI JS -->
-<script src="https://uicdn.toast.com/tui.code-snippet/latest/tui-code-snippet.js"></script>
-<script src="https://uicdn.toast.com/tui.time-picker/v1.6.1/tui-time-picker.min.js"></script>
-<script src="https://uicdn.toast.com/tui.date-picker/v3.3.4/tui-date-picker.min.js"></script>
-<script src="{% static 'main_cal/js/tui-calendar.min.js' %}"></script>
+<script src="https://uicdn.toast.com/tui.code-snippet/latest/tui-code-snippet.min.js"></script>
+<script src="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.min.js"></script>
+<script src="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.min.js"></script>
+<script src="{% static 'main_cal/js/tui-calendar.js' %}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chance/1.0.13/chance.min.js"></script>
 {% endblock %}
@@ -21,13 +21,13 @@
 {% block body %} 
 <div id="menu">
     <span id="menu-navi">
-    <button type="button" class="btn btn-default btn-sm move-today" data-action="move-today">Today</button>
-    <button type="button" class="btn btn-default btn-sm move-day" data-action="move-prev">
-        <i class="calendar-icon ic-arrow-line-left" data-action="move-prev"></i>
-    </button>
-    <button type="button" class="btn btn-default btn-sm move-day" data-action="move-next">
-        <i class="calendar-icon ic-arrow-line-right" data-action="move-next"></i>
-    </button>
+        <button type="button" class="btn btn-sm btn-secondary move-today" data-action="move-today">Today</button>
+        <button type="button" class="btn btn-secondary btn-sm move-day" data-action="move-prev">
+            <i class="calendar-icon ic-arrow-line-left" data-action="move-prev"></i> <
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm move-day" data-action="move-next">
+            <i class="calendar-icon ic-arrow-line-right" data-action="move-next"></i> >
+        </button>
     </span>
     <span id="renderRange" class="render-range"></span>
 </div>
@@ -60,6 +60,19 @@
         'beforeUpdateSchedule': function(e) {
             var schedule = e.schedule;
             var changes = e.changes;
+
+            $.ajax({
+                type: "POST",
+                url: "{% url 'calendar:ajax_edit_schedule' %}",
+                data: {
+                    'changes': schedule,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                dataType: "json",
+                success: function(response) {
+                    alert(response)
+                }
+            })
 
             console.log('beforeUpdateSchedule', e);
 
@@ -245,10 +258,10 @@
         end: '{{ s.get_end }}',
         category: {{ s.isAllDay }} ? 'allday' : 'time',
         dueDateClass: '',
-        color: 's.calendar.color',
-        bgColor: 's.calendar.bg_color',
-        dragBgColor: 's.calendar.bg_color',
-        borderColor: 's.calendar.border_color',
+        color: '{{ s.calendar.color }}',
+        bgColor: '{{ s.calendar.bg_olor }}',
+        dragBgColor: '{{ s.calendar.drag_bg_color }}',
+        borderColor: '{{ s.calendar.border_color }}',
         raw: {
             location: location
         },

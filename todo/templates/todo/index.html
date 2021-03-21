@@ -13,7 +13,7 @@
 <script src="https://uicdn.toast.com/tui.code-snippet/latest/tui-code-snippet.js"></script>
 <script src="https://uicdn.toast.com/tui.time-picker/v1.6.1/tui-time-picker.min.js"></script>
 <script src="https://uicdn.toast.com/tui.date-picker/v3.3.4/tui-date-picker.min.js"></script>
-<script src="{% static 'main_cal/js/tui-calendar.min.js' %}"></script>
+<script src="{% static 'main_cal/js/tui-calendar.js' %}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chance/1.0.13/chance.min.js"></script>
 {% endblock %}
@@ -86,6 +86,7 @@
     $('.complete_button').click(function (){
         var button = $(this);
         var tid = $(this).attr('name');
+
         $.ajax({
             type: "POST",
             url: "{% url 'todo:complete_todo' %}",
@@ -97,21 +98,26 @@
             success: function(response){
                 if (response.complete)
                 {
-                    button.html("미완료 처리");
-                    button.parent().parent().css({"color":"gray", "text-decoration":"line-through"});
-                    button.parent().parent().addClass('complete')
-                    button.parent().parent().removeClass('incomplete')
+                    button.html('<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16"> \
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/> \
+                    <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/> \
+                </svg>');
+                    button.next().css({"color":"gray", "text-decoration":"line-through"});
+                    button.next().addClass('complete')
+                    button.next().removeClass('incomplete')
                     if ($('#complete_display_toggle').html() == '완료한일 보이기')
                     {
-                        button.parent().parent().parent().hide()
+                        button.next().parent().hide()
                     }
                 }
                 else 
                 {
-                    button.html("완료 처리");
-                    button.parent().parent().css({"color":"black", "text-decoration":"none"});
-                    button.parent().parent().addClass('incomplete')
-                    button.parent().parent().removeClass('complete')
+                    button.html('<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">\
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>\
+            </svg>');
+                    button.next().css({"color":"black", "text-decoration":"none"});
+                    button.next().addClass('incomplete')
+                    button.next().removeClass('complete')
                 }
             },
             error: function (request, status, error) {
@@ -188,11 +194,16 @@
         }
     }) {% endcomment %}
 
+    var templates = {
+
+    }
+
     var cal = new tui.Calendar('#calendar', {
         defaultView: 'day', // daily view option
         useCreationPopup: true,
         useDetailPopup: true,
         calendars: CalendarList, 
+        template: templates,
     });
 
     cal.on({
@@ -213,7 +224,28 @@
             var schedule = e.schedule;
             var changes = e.changes;
 
+            var end_date = null;
+            var start_date = null;
+
+            var data = {}
+
+            if (changes.end)
+                data['end_date'] = changes.end._date
+            if (changes.start)
+                data['start_date'] = changes.start._date
+            data['csrfmiddlewaretoken'] = '{{ csrf_token }}'
+            data['schedule_id'] = schedule.id
+
             console.log('beforeUpdateSchedule', e);
+            $.ajax({
+                type: "POST",
+                url: "{% url 'calendar:ajax_edit_schedule' %}",
+                data: data,
+                dataType: "json",
+                success: function(response) {
+                    alert(response)
+                }
+            })
 
             if (changes && !changes.isAllDay && schedule.category === 'allday') {
                 changes.category = 'time';
@@ -285,6 +317,10 @@
         return found || CalendarList[0];
     }
 
+    function getDataAction(target) {
+        return target.dataset ? target.dataset.action : target.getAttribute('data-action');
+    }
+
     function onClickNavi(e) {
         var action = getDataAction(e.target);
 
@@ -303,8 +339,13 @@
         }
 
         setRenderRangeText();
-        setSchedules();
     }
+
+    function setEventListener() {
+        {% comment %} $('.dropdown-menu a[role="menuitem"]').on('click', onClickMenu); {% endcomment %}
+        $('#menu-navi').on('click', onClickNavi);
+        {% comment %} window.addEventListener('resize', resizeThrottled); {% endcomment %}
+    }    
 
     function onNewSchedule() {
         var title = $('#new-schedule-title').val();
@@ -407,5 +448,31 @@
         state: 'Busy'
     }]);
     {% endfor %}
+
+    function setRenderRangeText() {
+        var renderRange = document.getElementById('renderRange');
+        var options = cal.getOptions();
+        var viewName = cal.getViewName();
+        var html = [];
+        if (viewName === 'day') {
+            html.push(moment(cal.getDate().getTime()).format('YYYY.MM.DD'));
+        } else if (viewName === 'month' &&
+            (!options.month.visibleWeeksCount || options.month.visibleWeeksCount > 4)) {
+            html.push(moment(cal.getDate().getTime()).format('YYYY.MM'));
+        } else {
+            html.push(moment(cal.getDateRangeStart().getTime()).format('YYYY.MM.DD'));
+            html.push(' ~ ');
+            html.push(moment(cal.getDateRangeEnd().getTime()).format(' MM.DD'));
+        }
+        renderRange.innerHTML = html.join('');
+    }
+
+    function init() {
+        cal.setCalendars(CalendarList);
+        setRenderRangeText();
+        setEventListener();
+    }
+
+    init();
 </script>
 {% endblock %}

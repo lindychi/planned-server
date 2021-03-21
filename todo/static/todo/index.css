@@ -13,3 +13,11 @@ li:hover > span > div.todo_menu_div {
 .flex-item {
   flex: 1;
 }
+
+ul {
+  list-style: none;
+}
+
+li {
+  list-style: none;
+}
