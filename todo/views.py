@@ -1,16 +1,21 @@
 import json
+from main_cal.models import Calendar, Schedule
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
 from .models import Todo
 from django.contrib.auth.models import User
 from config.models import Config
+from django.utils import timezone
 
 # Create your views here.
 def todo_index(request):
     todos = Todo.objects.filter(parent=None)
-    config = Config.objects.get(user=User.objects.get(username='hanchi'))
+    user=User.objects.get(username='hanchi')
+    config = Config.objects.get(user=user)
 
-    return render(request, 'todo/index.html', {'todos':todos, 'config':config})
+    schedules = Schedule.objects.filter(user=user)
+
+    return render(request, 'todo/index.html', {'todos':todos, 'config':config, 'schedules':schedules})
 
 def complete_todo(request):
     if request.method == 'POST':
@@ -52,3 +57,29 @@ def add_lower_todo(request):
         todo.save()
 
         return redirect('todo:index')
+
+def connect_top_to_calendar(request, tid):
+    # TODO: 본인 체크 필요
+    todo = Todo.objects.get(id=tid)
+    if not todo.parent:
+        todo.connect_to_calendar()
+
+    return redirect('todo:index')
+
+def add_new_schedule(request, tid):
+    todo = Todo.objects.get(id=tid)
+
+    schedule = Schedule.objects.create(user=todo.user, title=todo.name, todo=todo, calendar=todo.get_calendar(), start_date=timezone.now())
+    schedule.save()
+
+    return redirect('todo:index')
+
+def end_last_schedule(request, tid):
+    todo = Todo.objects.get(id=tid)
+
+    schedule = Schedule.objects.filter(todo=todo).last()
+    schedule.end_date = timezone.now()
+    schedule.save()
+
+    return redirect('todo:index')
+

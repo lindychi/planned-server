@@ -8,7 +8,8 @@ class Config(models.Model):
     show_todo_complete = models.BooleanField(default=True)
 
 class Color(models.Model):
-    color = models.CharField(max_length=12)
-    bg_color = models.CharField(max_length=12)
-    drag_bg_color = models.CharField(max_length=12)
-    border_color = models.CharField(max_length=12)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    color = models.CharField(max_length=12, default='#ffffff')
+    bg_color = models.CharField(max_length=12, default='#000000')
+    drag_bg_color = models.CharField(max_length=12, default='#000000')
+    border_color = models.CharField(max_length=12, default='#ffffff')

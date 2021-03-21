@@ -9,3 +9,7 @@ li:hover > span > div.todo_menu_div {
 .add_todo_form {
   display: none;
 }
+
+.flex-item {
+  flex: 1;
+}

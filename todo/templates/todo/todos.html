@@ -1,9 +1,27 @@
 <ul>
 {% for t in todos %}
     <li>
+        {% if not t.parent %}
+            {% if t.calendar %}
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle-fill" viewBox="0 0 16 16" style="color: {{ t.calendar.color.bg_color }};">
+                <circle cx="8" cy="8" r="8"/>
+            </svg>
+            {% else %}
+            <a href="{% url 'todo:connect_top_to_calendar' t.id %}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                </svg>
+            </a>
+            {% endif %}
+        {% endif %}
         <span {% if t.complete %}style="text-decoration: line-through; color:gray;" class="complete"{% else %}class="incomplete"{% endif %}>
             {{ t.name }}
             <div class="todo_menu_div">
+            {% if t.last_schedule and not t.last_schedule.is_end %}
+            <a href="{% url 'todo:end_last_schedule' t.id %}" class="btn btn-primary btn-sm">일정 종료</a>
+            {% else %}
+            <a href="{% url 'todo:add_new_schedule' t.id %}" class="btn btn-primary btn-sm">새 일정 시작</a>
+            {% endif %}
             <button class="complete_button" name="{{ t.id }}">{% if t.complete %}미완료 처리{% else %}완료 처리{% endif %}</button>
             <button class="add_todo" name="{{ t.id }}">하위 할일 추가</button>
             <form class="add_todo_form" method="POST" action="{% url 'todo:add_lower_todo' %}">

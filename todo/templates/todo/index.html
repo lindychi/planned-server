@@ -3,22 +3,53 @@
 
 {% block css %}
 <link rel="stylesheet" href="{% static 'todo/index.css' %}">
+<!-- TUI Calender -->
+<link rel="stylesheet" type="text/css" href="{% static 'main_cal/css/tui-calendar.min.css' %}" />
+<!-- If you use the default popups, use this. -->
+<link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css" />
+<link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css" />
+{% comment %} <link rel="stylesheet" type="text/css" href="/resources/js/calendar/tui-calendar/examples/css/icons.css" /> {% endcomment %}
+<!-- TUI JS -->
+<script src="https://uicdn.toast.com/tui.code-snippet/latest/tui-code-snippet.js"></script>
+<script src="https://uicdn.toast.com/tui.time-picker/v1.6.1/tui-time-picker.min.js"></script>
+<script src="https://uicdn.toast.com/tui.date-picker/v3.3.4/tui-date-picker.min.js"></script>
+<script src="{% static 'main_cal/js/tui-calendar.min.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chance/1.0.13/chance.min.js"></script>
 {% endblock %}
 
 {% block body %} 
-<h1>{% if parent %}{{ parent }}{% else %}할일의 리스트{% endif %}</h1>
-<button id="complete_display_toggle">완료한일 가리기</button></br>
-<div class="todo_menu_div">
-<button class="add_todo" name="{{ t.id }}">하위 할일 추가</button>
-<form class="add_todo_form d-inline-block" method="POST" action="{% url 'todo:add_lower_todo' %}">
-    {% csrf_token %}
-    <input type="text" name="name" />
-    <input class="add_todo_submit" type="submit" value="항목 추가" />
-</form>
+<div class="d-flex flex-row">
+    <div class="flex-item">
+        <div id="menu">
+            <span id="menu-navi">
+            <button type="button" class="btn btn-default btn-sm move-today" data-action="move-today">Today</button>
+            <button type="button" class="btn btn-default btn-sm move-day" data-action="move-prev">
+                <i class="calendar-icon ic-arrow-line-left" data-action="move-prev"></i>
+            </button>
+            <button type="button" class="btn btn-default btn-sm move-day" data-action="move-next">
+                <i class="calendar-icon ic-arrow-line-right" data-action="move-next"></i>
+            </button>
+            </span>
+            <span id="renderRange" class="render-range"></span>
+        </div>
+        <div id="calendar"></div>
+    </div>
+    <div class="flex-item">
+        <h1>{% if parent %}{{ parent }}{% else %}할일의 리스트{% endif %}</h1>
+        <button id="complete_display_toggle">완료한일 가리기</button></br>
+        <div>
+        <button class="add_todo" name="{{ t.id }}">하위 할일 추가</button>
+        <form class="add_todo_form d-inline-block" method="POST" action="{% url 'todo:add_lower_todo' %}">
+            {% csrf_token %}
+            <input type="text" name="name" />
+            <input class="add_todo_submit" type="submit" value="항목 추가" />
+        </form>
+        </div>
+
+        {% include "todo/todos.html" with todos=todos %}
+    </div>
 </div>
-
-{% include "todo/todos.html" with todos=todos %}
-
 {% endblock %}
 
 {% block prevscript %}
@@ -156,5 +187,225 @@
             })
         }
     }) {% endcomment %}
+
+    var cal = new tui.Calendar('#calendar', {
+        defaultView: 'day', // daily view option
+        useCreationPopup: true,
+        useDetailPopup: true,
+        calendars: CalendarList, 
+    });
+
+    cal.on({
+        'clickMore': function(e) {
+            console.log('clickMore', e);
+        },
+        'clickSchedule': function(e) {
+            console.log('clickSchedule', e);
+        },
+        'clickDayname': function(date) {
+            console.log('clickDayname', date);
+        },
+        'beforeCreateSchedule': function(e) {
+            console.log('beforeCreateSchedule', e);
+            saveNewSchedule(e);
+        },
+        'beforeUpdateSchedule': function(e) {
+            var schedule = e.schedule;
+            var changes = e.changes;
+
+            console.log('beforeUpdateSchedule', e);
+
+            if (changes && !changes.isAllDay && schedule.category === 'allday') {
+                changes.category = 'time';
+            }
+
+            cal.updateSchedule(schedule.id, schedule.calendarId, changes);
+            refreshScheduleVisibility();
+        },
+        'beforeDeleteSchedule': function(e) {
+            console.log('beforeDeleteSchedule', e);
+            cal.deleteSchedule(e.schedule.id, e.schedule.calendarId);
+        },
+        'afterRenderSchedule': function(e) {
+            var schedule = e.schedule;
+            // var element = cal.getElement(schedule.id, schedule.calendarId);
+            // console.log('afterRenderSchedule', element);
+        },
+        'clickTimezonesCollapseBtn': function(timezonesCollapsed) {
+            console.log('timezonesCollapsed', timezonesCollapsed);
+
+            if (timezonesCollapsed) {
+                cal.setTheme({
+                    'week.daygridLeft.width': '77px',
+                    'week.timegridLeft.width': '77px'
+                });
+            } else {
+                cal.setTheme({
+                    'week.daygridLeft.width': '60px',
+                    'week.timegridLeft.width': '60px'
+                });
+            }
+
+            return true;
+        }
+    })
+
+    function CalendarInfo() {
+        this.id = null;
+        this.name = null;
+        this.checked = true;
+        this.color = null;
+        this.bgColor = null;
+        this.borderColor = null;
+        this.dragBgColor = null;
+    }
+
+    var CalendarList = [];
+    var c = new CalendarInfo();
+    {% for c in calendar %}
+    var id = 1;
+    c.id = '{{ c.id }}';
+    c.name = '{{ c.title}}';
+    c.color = '#ffffff';
+    c.bgColor = '{{ c.color }}';
+    c.dragBgColor = '{{ c.color }}';
+    c.borderColor = '{{ c.color }}';
+    CalendarList.push(c);
+    {% endfor %}
+
+    function findCalendar(id) {
+        var found;
+
+        CalendarList.forEach(function(calendar) {
+            if (calendar.id === id) {
+                found = calendar;
+            }
+        });
+
+        return found || CalendarList[0];
+    }
+
+    function onClickNavi(e) {
+        var action = getDataAction(e.target);
+
+        switch (action) {
+            case 'move-prev':
+                cal.prev();
+                break;
+            case 'move-next':
+                cal.next();
+                break;
+            case 'move-today':
+                cal.today();
+                break;
+            default:
+                return;
+        }
+
+        setRenderRangeText();
+        setSchedules();
+    }
+
+    function onNewSchedule() {
+        var title = $('#new-schedule-title').val();
+        var location = $('#new-schedule-location').val();
+        var isAllDay = document.getElementById('new-schedule-allday').checked;
+        var start = datePicker.getStartDate();
+        var end = datePicker.getEndDate();
+        var calendar = selectedCalendar ? selectedCalendar : CalendarList[0];
+
+        if (!title) {
+            return;
+        }
+
+        cal.createSchedules([{
+            id: String(chance.guid()),
+            calendarId: calendar.id,
+            title: title,
+            isAllDay: isAllDay,
+            start: start,
+            end: end,
+            category: isAllDay ? 'allday' : 'time',
+            dueDateClass: '',
+            color: calendar.color,
+            bgColor: calendar.bgColor,
+            dragBgColor: calendar.bgColor,
+            borderColor: calendar.borderColor,
+            raw: {
+                location: location
+            },
+            state: 'Busy'
+        }]);
+
+        $('#modal-new-schedule').modal('hide');
+    }
+
+    function saveNewSchedule(scheduleData) {
+        var calendar = scheduleData.calendar || findCalendar(scheduleData.calendarId);
+        var schedule = {
+            id: String(chance.guid()),
+            title: scheduleData.title,
+            isAllDay: scheduleData.isAllDay,
+            start: scheduleData.start,
+            end: scheduleData.end,
+            category: scheduleData.isAllDay ? 'allday' : 'time',
+            dueDateClass: '',
+            color: calendar.color,
+            bgColor: calendar.bgColor,
+            dragBgColor: calendar.bgColor,
+            borderColor: calendar.borderColor,
+            location: scheduleData.location,
+            raw: {
+                class: scheduleData.raw['class']
+            },
+            state: scheduleData.state
+        };
+        if (calendar) {
+            schedule.calendarId = calendar.id;
+            schedule.color = calendar.color;
+            schedule.bgColor = calendar.bgColor;
+            schedule.borderColor = calendar.borderColor;
+        }
+
+        cal.createSchedules([schedule]);
+
+        refreshScheduleVisibility();
+    }
+
+    function refreshScheduleVisibility() {
+        var calendarElements = Array.prototype.slice.call(document.querySelectorAll('#calendarList input'));
+
+        CalendarList.forEach(function(calendar) {
+            cal.toggleSchedules(calendar.id, !calendar.checked, false);
+        });
+
+        cal.render(true);
+
+        calendarElements.forEach(function(input) {
+            var span = input.nextElementSibling;
+            span.style.backgroundColor = input.checked ? span.style.borderColor : 'transparent';
+        });
+    }
+
+    {% for s in schedules %}
+    cal.createSchedules([{
+        id: '{{ s.id }}',
+        calendarId: '{{ s.calendar.id}}',
+        title: '{{ s.title }}',
+        isAllDay: '{{ s.isAllDay }}',
+        start: '{{ s.get_start_date }}',
+        end: '{{ s.get_end_date }}',
+        category: '{{ s.category }}',
+        dueDateClass: '',
+        color: '{{ s.calendar.color }}',
+        bgColor: '{{ s.calendar.bg_color }}',
+        dragBgColor: '{{ s.calendar.bg_color }}',
+        borderColor: '{{ s.calendar.border_color }}',
+        raw: {
+            location: location
+        },
+        state: 'Busy'
+    }]);
+    {% endfor %}
 </script>
 {% endblock %}

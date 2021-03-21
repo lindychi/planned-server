@@ -39,7 +39,8 @@
     var cal = new tui.Calendar('#calendar', {
         defaultView: 'day', // daily view option
         useCreationPopup: true,
-        useDetailPopup: true
+        useDetailPopup: true,
+        calendars: CalendarList, 
     });
 
     cal.on({
@@ -107,16 +108,18 @@
         this.dragBgColor = null;
     }
 
-    var c = new CalendarInfo();
-    var id = 1;
-    c.id = String(id);
-    c.name = 'My Calendar';
-    c.color = '#ffffff';
-    c.bgColor = '#9e5fff';
-    c.dragBgColor = '#9e5fff';
-    c.borderColor = '#9e5fff';
     var CalendarList = [];
+    var c = new CalendarInfo();
+    {% for c in calendar %}
+    var id = 1;
+    c.id = '{{ c.id }}';
+    c.name = '{{ c.title}}';
+    c.color = '#ffffff';
+    c.bgColor = '{{ c.color }}';
+    c.dragBgColor = '{{ c.color }}';
+    c.borderColor = '{{ c.color }}';
     CalendarList.push(c);
+    {% endfor %}
 
     function findCalendar(id) {
         var found;
@@ -231,5 +234,26 @@
             span.style.backgroundColor = input.checked ? span.style.borderColor : 'transparent';
         });
     }
+
+    {% for s in schedules %}
+    cal.createSchedules([{
+        id: '{{ s.id }}',
+        calendarId: '{{ s.calendar.id}}',
+        title: '{{ s.title }}',
+        isAllDay: '{{ s.isAllDay }}',
+        start: '{{ s.get_start }}',
+        end: '{{ s.get_end }}',
+        category: {{ s.isAllDay }} ? 'allday' : 'time',
+        dueDateClass: '',
+        color: 's.calendar.color',
+        bgColor: 's.calendar.bg_color',
+        dragBgColor: 's.calendar.bg_color',
+        borderColor: 's.calendar.border_color',
+        raw: {
+            location: location
+        },
+        state: 'Busy'
+    }]);
+    {% endfor %}
 </script>
 {% endblock %}
