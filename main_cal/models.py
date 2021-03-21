@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 import datetime
 
 # Create your models here.
@@ -27,7 +28,8 @@ class Schedule(models.Model):
         if self.end_date:
             return get_datetime_str(self.end_date)
         else:
-            return get_datetime_str(self.start_date + datetime.timedelta(hours=1))
+            return get_datetime_str(timezone.now())
+            # return get_datetime_str(self.start_date + datetime.timedelta(hours=1))
 
     def is_end(self):
         return (self.end_date != None)
