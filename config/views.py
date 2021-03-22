@@ -1,12 +1,14 @@
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth.models import User
-from .models import Config
+from django.urls import reverse
+from .models import Config, Color
 
 # Create your views here.
 def index(request):
     config = Config.objects.get(user=User.objects.get(username='hanchi'))
-    return render(request, 'config/index.html', {'config':config})
+    colors = Color.objects.all()
+    return render(request, 'config/index.html', {'config':config, 'colors':colors})
 
 def ajax_show_todo_complete(request):
     show_todo_complete = False
@@ -26,4 +28,11 @@ def ajax_show_todo_complete(request):
         config.save()
 
     return HttpResponse('')
-        
+
+def add_new_system_color(request):
+    if request.method == 'POST':
+        user = User.objects.get(username='hanchi')
+        color = Color.objects.create(user=user, color=request.POST['color'], bg_color=request.POST['bg_color'],
+                                    drag_bg_color=request.POST['bg_color'], border_color=request.POST['border_color'])
+        color.save()
+    return HttpResponseRedirect(reverse('config:index'))

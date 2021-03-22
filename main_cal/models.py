@@ -1,7 +1,9 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from config.models import Color
 import datetime
+import random
 
 # Create your models here.
 class Calendar(models.Model):
@@ -9,6 +11,10 @@ class Calendar(models.Model):
     title = models.CharField(max_length=64)
     todo = models.OneToOneField('todo.Todo', on_delete=models.CASCADE)
     color = models.ForeignKey('config.Color', on_delete=models.CASCADE)
+
+    def change_random_color(self):
+        self.color = random.choice(Color.objects.all().exclude(id=self.color.id))
+        self.save()
 
 class Schedule(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

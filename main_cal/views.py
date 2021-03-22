@@ -1,7 +1,8 @@
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from main_cal.models import Calendar, Schedule
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 import datetime
 from dateutil.parser import parse
@@ -30,3 +31,8 @@ def ajax_edit_schedule(request):
             schedule.save()
 
     return HttpResponse()
+
+def change_random_color(request, cid):
+    calendar = Calendar.objects.get(id=cid)
+    calendar.change_random_color()
+    return HttpResponseRedirect(reverse('todo:index'))

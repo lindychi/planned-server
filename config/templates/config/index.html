@@ -1,0 +1,48 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'todo/index.css' %}">
+{% endblock %}
+
+{% block body %}
+<div class="d-flex flex-row"> 
+    <div class="flex-item m-2">
+        색상
+    </div>
+    <div style="flex: 2;" class="m-2">
+        {% for c in colors %}
+        <div class="btn btn-sm"style="color: {{ c.color }}; background-color: {{ c.bg_color }}; border: solid 1px #{{ c.border_color }};">
+            {{ c }}
+        </div>
+        {% endfor %}
+        <div class="m-2">
+            <form method="POST" action="{% url 'config:add_new_system_color' %}">
+                새로운 색깔 추가</br>
+                {% csrf_token %}
+                <label>글자 색깔</label>
+                <input id="config_color" name="color" type="text" value="#000000"></input></br>
+                <label>배경 색깔</label>
+                <input id="config_bgcolor" name="bg_color" type="text" value="#ffffff"></input></br>
+                <label>테두리 색깔</label>
+                <input id="config_bordercolor" name="border_color" type="text" value="#000000"></input></br>
+                <input type="submit" id="example_box" class="btn btn-sm" style="color:#000000; background-color:#ffffff; border: solid 1px #000000;" />
+            </form>
+        </div>
+    </div>
+<div>
+{% endblock %}
+
+{% block prevscript %}
+<script>
+    $('#config_color').change(function(){
+        $("#example_box").css("color", $(this).val());
+    });
+    $('#config_bgcolor').change(function(){
+        $("#example_box").css("background-color", $(this).val());
+    });
+    $('#config_bordercolor').change(function(){
+        $("#example_box").css("border-color", $(this).val());
+    });
+</script>
+{% endblock %}
