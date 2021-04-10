@@ -8,6 +8,14 @@
 {% block body %} 
 <h1>관계의 리스트</h1>
 
+<div>
+    <form method="POST" action="{% url 'person:add_name' %}">
+        {% csrf_token %}
+        이름: <input type="text" name="name">
+        <input type="submit" value="이름 추가">
+    </form>
+</div>
+
 <div class="d-flex flex-row">
     <div class="flex-item">
         만난것 기준

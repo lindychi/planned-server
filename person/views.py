@@ -23,3 +23,10 @@ def communicate_update_person(request, pid):
     person.update_communicate()
 
     return redirect('/person')
+
+@login_required
+def add_name(request):
+    if request.method == 'POST':
+        name = request.POST['name']
+        person = Person.objects.create(user=request.user, name=name)
+    return redirect('/person')
