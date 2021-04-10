@@ -10,10 +10,12 @@ from django.utils import timezone
 # Create your views here.
 def todo_index(request):
     todos = Todo.objects.filter(parent=None)
-    user=User.objects.get(username='hanchi')
-    config = Config.objects.get(user=user)
+    try:
+        config = Config.objects.get(user=request.user)
+    except Config.DoesNotExist:
+        config = Config.objects.create(user=request.user)
 
-    schedules = Schedule.objects.filter(user=user)
+    schedules = Schedule.objects.filter(user=request.user)
 
     return render(request, 'todo/index.html', {'todos':todos, 'config':config, 'schedules':schedules})
 

@@ -6,7 +6,11 @@ from .models import Config, Color
 
 # Create your views here.
 def index(request):
-    config = Config.objects.get(user=User.objects.get(username='hanchi'))
+    try:
+        config = Config.objects.get(user=request.user)
+    except Config.DoesNotExist:
+        config = Config.objects.create(user=request.user)
+        config.save()
     colors = Color.objects.all()
     return render(request, 'config/index.html', {'config':config, 'colors':colors})
 
