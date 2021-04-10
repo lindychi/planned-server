@@ -1,0 +1,34 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'todo/index.css' %}">
+<!-- TUI Calender -->
+<link rel="stylesheet" type="text/css" href="{% static 'main_cal/css/tui-calendar.min.css' %}" />
+<!-- If you use the default popups, use this. -->
+<link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css" />
+<link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css" />
+{% comment %} <link rel="stylesheet" type="text/css" href="/resources/js/calendar/tui-calendar/examples/css/icons.css" /> {% endcomment %}
+<!-- TUI JS -->
+<script src="https://uicdn.toast.com/tui.code-snippet/latest/tui-code-snippet.js"></script>
+<script src="https://uicdn.toast.com/tui.time-picker/v1.6.1/tui-time-picker.min.js"></script>
+<script src="https://uicdn.toast.com/tui.date-picker/v3.3.4/tui-date-picker.min.js"></script>
+<script src="{% static 'main_cal/js/tui-calendar.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chance/1.0.13/chance.min.js"></script>
+{% endblock %}
+
+{% block body %} 
+<form autocomplete="off">
+    용도: <input type="text" name="title"></br>
+    구좌: <input type="text" name="account" ></br>
+    이자율: <input type="text" name="interest_rate" ></br>
+    이자상환 방식: <input type="text" name="repayment_method" ></br>
+    상환 개월 수: <input type="text" name="reimbursed_month" ></br>
+    결제일: <input type="text" name="start_date" ></br>
+    <input type="submit" value="추가" ></br>
+</form>
+{% endblock %}
+
+{% block prevscript %}
+{% endblock %}
