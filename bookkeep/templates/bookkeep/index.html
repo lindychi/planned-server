@@ -18,16 +18,42 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chance/1.0.13/chance.min.js"></script>
 {% endblock %}
 
-{% block body %} 
+{% block body %}
 {% include 'bookkeep/form_account.html' %}
-<form autocomplete="off">
-    용도: <input type="text" name="title"></br>
-    구좌: {% if accounts %}<div class="form-check form-check-inline">{% for a in accounts %}<input class="form-check-input" type="radio" name="account" id="account_{{ a.id }}" value="{{ a.title }}"><label class="form-check-label" for="account_{{ a.id }}">{{ a.title }}</label></div> {% endfor %}{% else %}구좌 없음{% endif %}</br>
-    이자율: <input type="text" name="interest_rate" ></br>
-    이자상환 방식: <input type="text" name="repayment_method" ></br>
-    상환 개월 수: <input type="text" name="reimbursed_month" ></br>
-    결제일: <input type="text" name="start_date" ></br>
-    <input type="submit" value="추가" ></br>
+<form autocomplete="off" class="m-3">
+    <div class="row">
+        <div class="col">
+            <label for="installment_form_title">용도</label>
+            <input type="text" name="title" class="form-control" id="installment_form_title">
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col">
+            <label>구좌</label></br>
+            {% if accounts %}<div class="form-check form-check-inline">{% for a in accounts %}<input class="form-check-input" type="radio" name="account" id="account_{{ a.id }}" value="{{ a.title }}"><label class="form-check-label" for="account_{{ a.id }}">{{ a.title }}</label></div> {% endfor %}{% else %}구좌 없음{% endif %}</br>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <label for="installment_form_rate">이자율</label>
+            <input type="text" name="interest_rate" class="form-control" id="installment_form_rate">
+        </div>
+        <div class="col">
+            <label for="installment_form_repayment_method">이자상환 방식</label>
+            <input type="text" name="repayment_method" class="form-control" id="installment_form_repayment_method">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <label for="installment_form_reimbursed_month">상환 개월 수</label>
+            <input type="text" name="reimbursed_month" class="form-control" id="installment_form_reimbursed_month">
+        </div>
+        <div class="col">
+            <label for="installment_form_start_date">결제일</label>
+            <input type="text" name="start_date" class="form-control" id="installment_form_start_date">
+        </div>
+    </div>
+    <input type="submit" value="추가" class="btn btn-primary w-100 mt-3">
 </form>
 {% endblock %}
 
