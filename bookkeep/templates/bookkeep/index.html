@@ -22,7 +22,7 @@
 {% include 'bookkeep/form_account.html' %}
 <form autocomplete="off">
     용도: <input type="text" name="title"></br>
-    구좌: {% if accounts %}{% for a in accounts %}<input type="radio" name="account" value="{{ a.title }}">{{ a.title }}</input> {% endfor %}{% else %}구좌 없음{% endif %}</br>
+    구좌: {% if accounts %}<div class="form-check form-check-inline">{% for a in accounts %}<input class="form-check-input" type="radio" name="account" id="account_{{ a.id }}" value="{{ a.title }}"><label class="form-check-label" for="account_{{ a.id }}">{{ a.title }}</label></div> {% endfor %}{% else %}구좌 없음{% endif %}</br>
     이자율: <input type="text" name="interest_rate" ></br>
     이자상환 방식: <input type="text" name="repayment_method" ></br>
     상환 개월 수: <input type="text" name="reimbursed_month" ></br>
