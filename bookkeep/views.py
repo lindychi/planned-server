@@ -26,3 +26,9 @@ def add_account(request):
     if request.method == "POST":
         account = Account.objects.create(user=request.user, title=request.POST['account'])
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+@login_required
+def delete_account(request, aid):
+    account = Account.objects.get(user=request.user, id=aid)
+    account.delete()
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])

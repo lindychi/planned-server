@@ -30,7 +30,15 @@
     <div class="row mt-2">
         <div class="col">
             <label>구좌</label></br>
-            {% if accounts %}<div class="form-check form-check-inline">{% for a in accounts %}<input class="form-check-input" type="radio" name="account" id="account_{{ a.id }}" value="{{ a.title }}"><label class="form-check-label" for="account_{{ a.id }}">{{ a.title }}</label></div> {% endfor %}{% else %}구좌 없음{% endif %}</br>
+            {% if accounts %}
+                {% for a in accounts %}
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="account" id="account_{{ a.id }}" value="{{ a.title }}">
+                    <label class="form-check-label" for="account_{{ a.id }}">{{ a.title }}</label>
+                    <a href="{% url 'bookkeep:delete_account' a.id %}" class="btn btn-danger btn-sm">X</a>
+                </div> 
+                {% endfor %}
+            {% else %}구좌 없음{% endif %}</br>
         </div>
     </div>
     <div class="row">
