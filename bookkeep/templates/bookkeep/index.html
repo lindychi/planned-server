@@ -19,14 +19,10 @@
 {% endblock %}
 
 {% block body %} 
-<form method="POST" action="{% url 'bookkeep:add_account' %}">
-    {% csrf_token %}
-    구좌: <input type="text" name="account">
-    <input type="submit" value="구좌 추가">
-</form>
+{% include 'bookkeep/form_account.html' %}
 <form autocomplete="off">
     용도: <input type="text" name="title"></br>
-    구좌: {% for a in accounts %}<input type="radio" name="account" value="{{ a.title }}">{{ a.title }}</input>{% endfor %}</br>
+    구좌: {% if accounts %}{% for a in accounts %}<input type="radio" name="account" value="{{ a.title }}">{{ a.title }}</input> {% endfor %}{% else %}구좌 없음{% endif %}</br>
     이자율: <input type="text" name="interest_rate" ></br>
     이자상환 방식: <input type="text" name="repayment_method" ></br>
     상환 개월 수: <input type="text" name="reimbursed_month" ></br>
