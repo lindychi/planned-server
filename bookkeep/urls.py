@@ -10,4 +10,5 @@ urlpatterns = [
     path('add_installment/', views.add_installment, name="add_installment"),
     path('recal_installment/<int:iid>/', views.recal_installment, name="recal_installment"),
     path('delete_installment/<int:iid>/', views.delete_installment, name="delete_installment"),
+    path('edit_installment/<int:iid>/', views.edit_installment, name="edit_installment"),
 ]

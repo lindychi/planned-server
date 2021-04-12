@@ -66,3 +66,14 @@ def delete_installment(request, iid):
     installment.delete()
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
+@login_required
+def edit_installment(request, iid):
+    if request.method == "POST":
+        installment = Installment.objects.get(user=request.user, id=iid)
+        if "title" in request.POST:
+            installment.title = request.POST['title']
+            installment.save()
+        return HttpResponseRedirect(request.META['HTTP_REFERER'])
+    else:    
+        installment = Installment.objects.get(user=request.user, id=iid)
+        return render(request, 'bookkeep/edit_installment.html', {'installment':installment})

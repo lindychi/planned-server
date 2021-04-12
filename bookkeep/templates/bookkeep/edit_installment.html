@@ -1,0 +1,28 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'todo/index.css' %}">
+<!-- TUI Calender -->
+<link rel="stylesheet" type="text/css" href="{% static 'main_cal/css/tui-calendar.min.css' %}" />
+<!-- If you use the default popups, use this. -->
+<link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css" />
+<link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css" />
+{% comment %} <link rel="stylesheet" type="text/css" href="/resources/js/calendar/tui-calendar/examples/css/icons.css" /> {% endcomment %}
+<!-- TUI JS -->
+<script src="https://uicdn.toast.com/tui.code-snippet/latest/tui-code-snippet.js"></script>
+<script src="https://uicdn.toast.com/tui.time-picker/v1.6.1/tui-time-picker.min.js"></script>
+<script src="https://uicdn.toast.com/tui.date-picker/v3.3.4/tui-date-picker.min.js"></script>
+<script src="{% static 'main_cal/js/tui-calendar.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chance/1.0.13/chance.min.js"></script>
+{% endblock %}
+
+{% block body %}
+<form method="POST" action="{% url 'bookkeep:edit_installment' installment.id %}">
+    {% csrf_token %}
+    <label for="edit_installment_title">제목</label>
+    <input type="text" name="title" value="{{ installment.title }}" id="edit_installment_title" class="form-control">
+    <input type="submit" value="변경">
+</form>
+{% endblock %}

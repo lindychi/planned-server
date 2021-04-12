@@ -71,7 +71,7 @@
 <ul>
 {% for i in installment %}
     <li>
-        {{ i.title }}
+        <a href="{% url 'bookkeep:edit_installment' i.id %}">{{ i.title }}</a>
         <a href="{% url 'bookkeep:recal_installment' i.id %}" class="btn btn-sm btn-success">갱신</a>
         <a href="{% url 'bookkeep:delete_installment' i.id %}" class="btn btn-sm btn-danger">삭제</a>
     </li>
