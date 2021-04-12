@@ -20,11 +20,16 @@
 
 {% block body %}
 {% include 'bookkeep/form_account.html' %}
-<form autocomplete="off" class="m-3">
+<form autocomplete="off" class="m-3" method="POST" action="{% url 'bookkeep:add_installment' %}">
+    {% csrf_token %}
     <div class="row">
         <div class="col">
             <label for="installment_form_title">용도</label>
             <input type="text" name="title" class="form-control" id="installment_form_title">
+        </div>
+        <div class="col">
+            <label for="installment_form_balance">금액</label>
+            <input type="text" name="balance" class="form-control" id="installment_form_balance">
         </div>
     </div>
     <div class="row mt-2">
@@ -63,6 +68,24 @@
     </div>
     <input type="submit" value="추가" class="btn btn-primary w-100 mt-3">
 </form>
+<ul>
+{% for i in installment %}
+    <li>
+        {{ i.title }}
+        <a href="{% url 'bookkeep:recal_installment' i.id %}" class="btn btn-sm btn-success">갱신</a>
+        <a href="{% url 'bookkeep:delete_installment' i.id %}" class="btn btn-sm btn-danger">삭제</a>
+    </li>
+    {% if i %}
+        <ul>
+        {% for p in i.get_paynodes %}
+            <li>
+                {{ p.paydate }} {{ p.title }} {{ p.balance }}
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endfor %}
+</ul>
 {% endblock %}
 
 {% block prevscript %}
