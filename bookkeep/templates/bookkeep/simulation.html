@@ -2,6 +2,13 @@
 {% load static %}
 
 {% block body %}
+날짜 지정 
+<form method="POST" aciton="{% url 'bookkeep:simulation_view' %}">
+    {% csrf_token %}
+    <input type="text" name="start_month" value="{{ start_month }}">
+    <input type="text" name="end_month" value="{{ end_month }}">
+    <input type="submit" value="범위 지정">
+</form>
 {% for g in groups %}
     {{ g.month|date:"o-m" }} - {{ g.sum }}</br>
 {% endfor %}

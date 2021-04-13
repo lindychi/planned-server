@@ -82,8 +82,21 @@ def edit_installment(request, iid):
 
 @login_required
 def simulation_view(request):
-    groups = Paynode.objects.filter(user=request.user).annotate(month=functions.TruncMonth('paydate')).values('month').annotate(sum=Sum('balance')).order_by('month')#.annotate(sum=Sum('balance'))
-    return render(request, 'bookkeep/simulation.html', {'groups':groups})
+    if request.method == "POST":
+        return_dict = {}
+        paynodes = Paynode.objects.filter(user=request.user)
+        if request.POST['start_month']:
+            paynodes = paynodes.filter(paydate__gte=datetime.datetime.strptime(request.POST['start_month'], '%Y-%m'))
+            return_dict['start_month'] = request.POST['start_month']
+        if request.POST['end_month']:
+            paynodes = paynodes.filter(paydate__lte=datetime.datetime.strptime(request.POST['end_month'], '%Y-%m'))
+            return_dict['end_month'] = request.POST['end_month']
+        groups = paynodes.annotate(month=functions.TruncMonth('paydate')).values('month').annotate(sum=Sum('balance')).order_by('month')#.annotate(sum=Sum('balance'))
+        return_dict['groups'] = groups
+        return render(request, 'bookkeep/simulation.html', return_dict)
+    else:
+        groups = Paynode.objects.filter(user=request.user).annotate(month=functions.TruncMonth('paydate')).values('month').annotate(sum=Sum('balance')).order_by('month')#.annotate(sum=Sum('balance'))
+        return render(request, 'bookkeep/simulation.html', {'groups':groups})
 
 @login_required
 def congrestion_installment(request):
