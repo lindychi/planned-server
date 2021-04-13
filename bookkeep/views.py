@@ -84,3 +84,9 @@ def edit_installment(request, iid):
 def simulation_view(request):
     groups = Paynode.objects.filter(user=request.user).annotate(month=functions.TruncMonth('paydate')).values('month').annotate(sum=Sum('balance')).order_by('month')#.annotate(sum=Sum('balance'))
     return render(request, 'bookkeep/simulation.html', {'groups':groups})
+
+@login_required
+def congrestion_installment(request):
+    accounts = Account.objects.filter(user=request.user)
+    installment = Installment.objects.filter(user=request.user)
+    return render(request, 'bookkeep/index.html', {'accounts':accounts, 'installment':installment, 'repayment_method':'체증식상환'})

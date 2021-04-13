@@ -53,7 +53,7 @@
         </div>
         <div class="col">
             <label for="installment_form_repayment_method">이자상환 방식</label>
-            <input type="text" name="repayment_method" class="form-control" id="installment_form_repayment_method">
+            <input type="text" name="repayment_method" class="form-control" id="installment_form_repayment_method" value="{% if repayment_method %}{{ repayment_method }}{% else %}원리금균등상환{% endif %}">
         </div>
     </div>
     <div class="row">
@@ -79,7 +79,7 @@
         <ul>
         {% for p in i.get_paynodes %}
             <li>
-                {{ p.paydate }} {{ p.title }} {{ p.balance }}
+                {{ p.paydate }} {{ p.title }} {{ p.balance }} = {{ p.principal }} + {{ p.interest }}
             </li>
         {% endfor %}
         </ul>

@@ -12,4 +12,5 @@ urlpatterns = [
     path('delete_installment/<int:iid>/', views.delete_installment, name="delete_installment"),
     path('edit_installment/<int:iid>/', views.edit_installment, name="edit_installment"),
     path('simulation_view/', views.simulation_view, name="simulation_view"),
+    path('congrestion_installment/', views.congrestion_installment, name="congrestion_installment"),
 ]
