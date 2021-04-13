@@ -1,7 +1,9 @@
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from .models import Account, Installment
+from .models import Account, Installment, Paynode
 from django.contrib.auth.decorators import login_required
+from django.db import models
+from django.db.models import functions, Sum
 import datetime
 
 # Create your views here.
@@ -77,3 +79,8 @@ def edit_installment(request, iid):
     else:    
         installment = Installment.objects.get(user=request.user, id=iid)
         return render(request, 'bookkeep/edit_installment.html', {'installment':installment})
+
+@login_required
+def simulation_view(request):
+    groups = Paynode.objects.filter(user=request.user).annotate(month=functions.TruncMonth('paydate')).values('month').annotate(sum=Sum('balance')).order_by('month')#.annotate(sum=Sum('balance'))
+    return render(request, 'bookkeep/simulation.html', {'groups':groups})

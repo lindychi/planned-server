@@ -1,0 +1,8 @@
+{% extends 'bookkeep/base.html' %} 
+{% load static %}
+
+{% block body %}
+{% for g in groups %}
+    {{ g.month|date:"o-m" }} - {{ g.sum }}</br>
+{% endfor %}
+{% endblock %}

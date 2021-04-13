@@ -1,4 +1,4 @@
-{% extends 'bookkeep/base.html' %} 
+{% extends 'base.html' %} 
 {% load static %}
 
 {% block css %}
@@ -18,11 +18,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chance/1.0.13/chance.min.js"></script>
 {% endblock %}
 
-{% block body %}
-<form method="POST" action="{% url 'bookkeep:edit_installment' installment.id %}">
-    {% csrf_token %}
-    <label for="edit_installment_title">제목</label>
-    <input type="text" name="title" value="{{ installment.title }}" id="edit_installment_title" class="form-control">
-    <input type="submit" value="변경">
-</form>
+{% block top_menu %}
+<ul>
+    <li><a href="{% url 'bookkeep:index' %}">할부 추가</a></li>
+    <li><a href="{% url 'bookkeep:simulation_view' %}">시뮬레이션</a></li>
+</ul>
 {% endblock %}
