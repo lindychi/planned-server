@@ -13,7 +13,7 @@ class Todo(models.Model):
     parent = models.ForeignKey('Todo', on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=2048)
     complete = models.BooleanField(default=False)
-    github_repo = models.CharField(max_length=256, default="")
+    github_repo = models.CharField(max_length=256, blank=True, default="")
 
     def __str__(self):
         return "[{0}] {1}".format(self.user, self.name)
