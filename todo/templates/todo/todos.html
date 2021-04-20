@@ -27,7 +27,9 @@
             {% endif %}
         </span>
         <span {% if t.complete %}style="text-decoration: line-through; color:gray;" class="complete"{% else %}class="incomplete{% if t.last_schedule and not t.last_schedule.is_end %} text-primary font-weight-bold{% endif %}"{% endif %}>
-            {{ t.name }}
+            <a href="{% url 'todo:todo_detail' t.id %}">
+                {{ t.name }}
+            </a>
             <div class="todo_menu_div">
             {% if not t.parent %}
                 {% if t.calendar %}

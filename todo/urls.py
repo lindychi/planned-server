@@ -9,6 +9,7 @@ urlpatterns = [
     path('connect_top_to_calendar/<int:tid>/', views.connect_top_to_calendar, name='connect_top_to_calendar'),
     path('add_new_schedule/<int:tid>/', views.add_new_schedule, name='add_new_schedule'),
     path('end_last_schedule/<int:tid>/', views.end_last_schedule, name='end_last_schedule'),
+    path('todo/detail/<int:tid>/', views.todo_detail, name="todo_detail"),
 
     path('ajax/complete/', views.complete_todo, name='complete_todo'),
     path('ajax/delete_todo/', views.delete_todo, name='delete_todo'),

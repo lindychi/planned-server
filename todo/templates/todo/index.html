@@ -41,14 +41,18 @@
         </div>
         <div id="calendar"></div>
     </div>
+
     <div class="flex-item">
-        <h1>{% if parent %}{{ parent }}{% else %}할일의 리스트{% endif %}</h1>
+        <h1>{% if parent %}{{ parent.get_parents_link|safe }}{{ parent.name }}{% else %}할일의 리스트{% endif %}</h1>
         <button id="complete_display_toggle">완료한일 가리기</button></br>
         <div>
         <button class="add_todo" name="{{ t.id }}">하위 할일 추가</button>
         <form class="add_todo_form d-inline-block" method="POST" action="{% url 'todo:add_lower_todo' %}">
             {% csrf_token %}
             <input type="text" name="name" />
+                {% if parent %}
+                <input type="hidden" name="tid" value="{{ parent.id }}">
+                {% endif %}
             <input class="add_todo_submit" type="submit" value="항목 추가" />
         </form>
         </div>
