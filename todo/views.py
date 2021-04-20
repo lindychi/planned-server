@@ -6,8 +6,10 @@ from .models import Todo
 from django.contrib.auth.models import User
 from config.models import Config
 from django.utils import timezone
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
+@login_required
 def todo_index(request):
     todos = Todo.objects.filter(parent=None)
     try:
@@ -97,3 +99,14 @@ def todo_detail(request, tid):
 
     return render(request, 'todo/index.html', {'parent':parent, 'todos':todos, 'config':config, 'schedules':schedules})
 
+@login_required
+def set_github_repo(request):
+    if request.method == 'POST':
+        tid = request.POST['tid']
+        repo = request.POST['github_repo']
+
+        todo = Todo.objects.get(id=tid, user=request.user)
+        todo.github_repo = repo
+        todo.save()
+
+        return HttpResponseRedirect(request.META['HTTP_REFERER'])

@@ -5,6 +5,7 @@ from main_cal.models import Calendar, Schedule
 from django.urls import reverse
 
 import random
+import re
 
 # Create your models here.
 class Todo(models.Model):
@@ -12,6 +13,7 @@ class Todo(models.Model):
     parent = models.ForeignKey('Todo', on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=2048)
     complete = models.BooleanField(default=False)
+    github_repo = models.CharField(max_length=256, default="")
 
     def __str__(self):
         return "[{0}] {1}".format(self.user, self.name)
@@ -46,3 +48,23 @@ class Todo(models.Model):
         html = "<a href='{}'>{}</a>".format(reverse('todo:index'), "main") + " > " + html
 
         return html
+
+    def get_github_repo(self):
+        repo = ""
+        ttodo = self
+        while ttodo is not None:
+            if ttodo.github_repo:
+                repo = ttodo.github_repo
+                break
+            ttodo = ttodo.parent
+        return repo
+
+    def get_name_with_link(self):
+        name = self.name
+        repo = self.get_github_repo()
+
+        if '#' in name and repo:
+            name = re.sub('#(\d+)', 
+                          "<a href='https://github.com/{}/issues/\g<1>'>\g<0></a>".format(repo),
+                          self.name)
+        return name
