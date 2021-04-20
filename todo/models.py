@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models
 from config.models import Color
 from main_cal.models import Calendar, Schedule
+from django.urls import reverse
 
 import random
 
@@ -35,3 +36,13 @@ class Todo(models.Model):
     def last_schedule(self):
         schedule = Schedule.objects.filter(todo=self).last()
         return schedule
+
+    def get_parents_link(self):
+        html = ""
+        ttodo = self.parent
+        while ttodo is not None:
+            html = "<a href='{}'>{}</a>".format(reverse('todo:todo_detail', args=[ttodo.id]), ttodo.name) + " > " + html
+            ttodo = ttodo.parent
+        html = "<a href='{}'>{}</a>".format(reverse('todo:index'), "main") + " > " + html
+
+        return html

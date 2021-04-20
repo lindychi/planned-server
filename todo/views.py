@@ -1,6 +1,6 @@
 import json
 from main_cal.models import Calendar, Schedule
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from .models import Todo
 from django.contrib.auth.models import User
@@ -58,7 +58,7 @@ def add_lower_todo(request):
         todo = Todo.objects.create(user=user, parent=parent, name=request.POST['name'])
         todo.save()
 
-        return redirect('todo:index')
+        return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 def connect_top_to_calendar(request, tid):
     # TODO: 본인 체크 필요
@@ -84,4 +84,16 @@ def end_last_schedule(request, tid):
     schedule.save()
 
     return redirect('todo:index')
+
+def todo_detail(request, tid):
+    parent = Todo.objects.get(id=tid)
+    todos = Todo.objects.filter(parent=parent)
+    try:
+        config = Config.objects.get(user=request.user)
+    except Config.DoesNotExist:
+        config = Config.objects.create(user=request.user)
+
+    schedules = Schedule.objects.filter(user=request.user)
+
+    return render(request, 'todo/index.html', {'parent':parent, 'todos':todos, 'config':config, 'schedules':schedules})
 
