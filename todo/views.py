@@ -76,7 +76,7 @@ def add_new_schedule(request, tid):
     schedule = Schedule.objects.create(user=todo.user, title=todo.name, todo=todo, calendar=todo.get_calendar(), start_date=timezone.now())
     schedule.save()
 
-    return redirect('todo:index')
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 def end_last_schedule(request, tid):
     todo = Todo.objects.get(id=tid)
@@ -85,7 +85,7 @@ def end_last_schedule(request, tid):
     schedule.end_date = timezone.now()
     schedule.save()
 
-    return redirect('todo:index')
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 def todo_detail(request, tid):
     parent = Todo.objects.get(id=tid)
