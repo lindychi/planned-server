@@ -57,6 +57,21 @@ class Installment(models.Model):
 
             print("원금 {} == {}".format(self.balance, principal_sum))
             print("이자 {} == {}".format(total_interest, interest_sum))
+        elif self.repayment_method == "대출고정상환":
+            month_interest_rate = self.interest_rate / 12 / 100
+            
+            iter_balance = self.balance
+            principal_value = int(self.balance / self.reimbursed_month)
+            for index in range(self.reimbursed_month):
+                interest_value = round(iter_balance * month_interest_rate, -2)
+                paynode = Paynode.objects.create(user=self.user, installment=self, account=self.account, 
+                                                 title="{0} ({1}/{2})".format(self.title, index + 1, self.reimbursed_month),
+                                                 principal=principal_value,
+                                                 interest=interest_value,
+                                                 balance=principal_value + interest_value, 
+                                                 paydate=(self.start_date + relativedelta(months=index)))
+                print("{}월 잔액: {}".format(index + 1, iter_balance))
+                iter_balance = iter_balance - principal_value
         else:
             return
 
