@@ -46,16 +46,32 @@
         <h1>{% if parent %}{{ parent.get_parents_link|safe }}{{ parent.name }}{% else %}할일의 리스트{% endif %}</h1>
         <button id="complete_display_toggle">완료한일 가리기</button></br>
         <div>
-        <button class="add_todo" name="{{ t.id }}">하위 할일 추가</button>
-        <form class="add_todo_form d-inline-block" method="POST" action="{% url 'todo:add_lower_todo' %}">
-            {% csrf_token %}
-            <input type="text" name="name" />
+            <button class="add_todo" name="{{ t.id }}">하위 할일 추가</button>
+            <form class="add_todo_form d-inline-block" method="POST" action="{% url 'todo:add_lower_todo' %}">
+                {% csrf_token %}
+                <input type="text" name="name" />
                 {% if parent %}
                 <input type="hidden" name="tid" value="{{ parent.id }}">
                 {% endif %}
-            <input class="add_todo_submit" type="submit" value="항목 추가" />
-        </form>
+                <input class="add_todo_submit" type="submit" value="항목 추가" />
+            </form>
         </div>
+
+        {% if parent %}
+        연관 인물
+        <form method="POST" action="{% url 'todo:add_person_to_todo' %}">
+            {% csrf_token %}
+            <input type="hidden" name="tid" value="{{ parent.id }}">
+            <input type="text" name="person" id="add_person_person">
+            <input type="submit" value="연관 인물 추가">
+        </form>
+
+        {% for p in parent.persons.all %}
+            <a href="{% url 'todo:remove_person_from_todo' parent.id p.id %}" class="btn btn-primary btn-sm">
+                {{ p.name }}
+            </a>
+        {% endfor %}
+        {% endif %}
 
         {% include "todo/todos.html" with todos=todos %}
     </div>
@@ -64,6 +80,10 @@
 
 {% block prevscript %}
 <script>
+    $('#add_person_person').autocomplete({
+        source: "{% url 'todo:ajax_person_autocomplete' %}",
+    });
+
     $('.delete_todo').click(function() {
         var tid = $(this).attr('name')
         var li = $(this).parent().parent()

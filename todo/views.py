@@ -3,9 +3,11 @@ from main_cal.models import Calendar, Schedule
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from .models import Todo
+from person.models import Person
 from django.contrib.auth.models import User
 from config.models import Config
 from django.utils import timezone
+import json
 
 # Create your views here.
 def todo_index(request):
@@ -97,3 +99,32 @@ def todo_detail(request, tid):
 
     return render(request, 'todo/index.html', {'parent':parent, 'todos':todos, 'config':config, 'schedules':schedules})
 
+def add_person_to_todo(request):
+    if request.method == "POST":
+        person = Person.objects.get(user=request.user, name=request.POST['person'])
+        todo = Todo.objects.get(user=request.user, id=request.POST['tid'])
+        todo.add_person(person)
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
+    
+def remove_person_from_todo(request, tid, pid):
+    person = Person.objects.get(user=request.user, id=pid)
+    todo = Todo.objects.get(user=request.user, id=tid)
+    todo.remove_person(person)
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+def ajax_person_autocomplete(request):
+    if request.is_ajax() and 'term' in request.GET:
+        print(request.GET['term'])
+        persons = Person.objects.filter(name__icontains=request.GET['term'])[:10]
+        results = []
+        for person in persons:
+            person_json = {}
+            person_json['id'] = person.id
+            person_json['label'] = person.name
+            person_json['value'] = person.name
+            results.append(person_json)
+        data = json.dumps(results)
+        mimetype = 'application/json'
+        print(data)
+        return HttpResponse(data, mimetype)
+    return HttpResponse()

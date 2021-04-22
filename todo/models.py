@@ -12,6 +12,7 @@ class Todo(models.Model):
     parent = models.ForeignKey('Todo', on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=2048)
     complete = models.BooleanField(default=False)
+    persons = models.ManyToManyField('person.Person', default=None)
 
     def __str__(self):
         return "[{0}] {1}".format(self.user, self.name)
@@ -46,3 +47,11 @@ class Todo(models.Model):
         html = "<a href='{}'>{}</a>".format(reverse('todo:index'), "main") + " > " + html
 
         return html
+
+    def add_person(self, person):
+        self.persons.add(person)
+        self.save()
+
+    def remove_person(self, person):
+        self.persons.remove(person)
+        self.save()
