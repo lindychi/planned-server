@@ -27,6 +27,9 @@ def complete_todo(request):
         todo.complete = not todo.complete
         todo.save()
 
+        for p in todo.persons.all():
+            p.update_meet()
+
         context = {'complete':todo.complete}
         return HttpResponse(json.dumps(context), content_type="application/json")
 
