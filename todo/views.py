@@ -7,9 +7,10 @@ from person.models import Person
 from django.contrib.auth.models import User
 from config.models import Config
 from django.utils import timezone
-import json
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
+@login_required
 def todo_index(request):
     todos = Todo.objects.filter(parent=None)
     try:
@@ -79,7 +80,7 @@ def add_new_schedule(request, tid):
     schedule = Schedule.objects.create(user=todo.user, title=todo.name, todo=todo, calendar=todo.get_calendar(), start_date=timezone.now())
     schedule.save()
 
-    return redirect('todo:index')
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 def end_last_schedule(request, tid):
     todo = Todo.objects.get(id=tid)
@@ -88,7 +89,7 @@ def end_last_schedule(request, tid):
     schedule.end_date = timezone.now()
     schedule.save()
 
-    return redirect('todo:index')
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 def todo_detail(request, tid):
     parent = Todo.objects.get(id=tid)
@@ -101,6 +102,18 @@ def todo_detail(request, tid):
     schedules = Schedule.objects.filter(user=request.user)
 
     return render(request, 'todo/index.html', {'parent':parent, 'todos':todos, 'config':config, 'schedules':schedules})
+
+@login_required
+def set_github_repo(request):
+    if request.method == 'POST':
+        tid = request.POST['tid']
+        repo = request.POST['github_repo']
+
+        todo = Todo.objects.get(id=tid, user=request.user)
+        todo.github_repo = repo
+        todo.save()
+        
+        return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 def add_person_to_todo(request):
     if request.method == "POST":

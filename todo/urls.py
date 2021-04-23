@@ -10,6 +10,7 @@ urlpatterns = [
     path('add_new_schedule/<int:tid>/', views.add_new_schedule, name='add_new_schedule'),
     path('end_last_schedule/<int:tid>/', views.end_last_schedule, name='end_last_schedule'),
     path('todo/detail/<int:tid>/', views.todo_detail, name="todo_detail"),
+    path('todo/set_github_repo/', views.set_github_repo, name="set_github_repo"),
     path('todo/add_person/', views.add_person_to_todo, name="add_person_to_todo"),
     path('todo/remove_person/<int:tid>/<int:pid>', views.remove_person_from_todo, name="remove_person_from_todo"),
 
