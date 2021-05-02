@@ -1,3 +1,4 @@
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
 from .models import Wiki
 from django.contrib.auth.decorators import login_required
@@ -12,8 +13,8 @@ def index(request):
 @login_required
 def add_wiki(request):
     if request.method == "POST":
-        wiki = Wiki.objects.create(user=request.user, title=request.POST['title'], content=request.POST['content'])
-        return reverse('wiki:index')
+        wiki = Wiki.objects.create(user=request.user, title=request.POST['title'], content="".join(request.POST['content']))
+        return HttpResponseRedirect(reverse('wiki:index'))
     return render(request, 'wiki/add_wiki.html', {})
 
 @login_required
