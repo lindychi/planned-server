@@ -1,0 +1,9 @@
+{% extends 'base.html' %} 
+
+{% block body %}
+위키 페이지
+<a href="{% url 'wiki:add_wiki' %}">위키 추가</a></br>
+{% for w in wikis %}
+    <a href="{% url 'wiki:detail_wiki' w.id %}">{{ w.title }}</a></br>
+{% endfor %}
+{% endblock %}
