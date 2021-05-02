@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'config',
     'main_cal',
     'bookkeep',
+    'wiki',
 ]
 
 MIDDLEWARE = [
