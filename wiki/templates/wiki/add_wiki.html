@@ -1,0 +1,10 @@
+{% extends 'base.html' %} 
+
+{% block body %}
+<form method="POST" action="{% url 'wiki:add_wiki' %}">
+    {% csrf_token %}
+    제목: <input type="text" name="title">
+    내용: <textarea name="content"></textarea>
+    <input type="submit" value="위키 추가">
+</form>
+{% endblock %}

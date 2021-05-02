@@ -29,4 +29,5 @@ urlpatterns = [
     path('config/', include('config.urls')),
     path('calendar/', include('main_cal.urls')),
     path('bookkeep/', include('bookkeep.urls')),
+    path('wiki/', include('wiki.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
