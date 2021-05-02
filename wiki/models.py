@@ -7,3 +7,6 @@ class Wiki(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField()
     create_date = models.DateTimeField(auto_now=True, auto_created=True)
+
+    def get_content(self):
+        return self.content.replace('\n','</br>')
