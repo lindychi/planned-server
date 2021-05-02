@@ -13,7 +13,7 @@ def index(request):
 @login_required
 def add_wiki(request):
     if request.method == "POST":
-        wiki = Wiki.objects.create(user=request.user, title=request.POST['title'], content="".join(request.POST['content']))
+        wiki = Wiki.objects.create(user=request.user, title=request.POST['title'], content=request.POST['content'])
         return HttpResponseRedirect(reverse('wiki:index'))
     return render(request, 'wiki/add_wiki.html', {})
 
