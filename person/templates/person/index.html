@@ -32,7 +32,7 @@
     <div class="flex-item">
         연락한 것 기준
         <ul>
-        {% for p in comus %}
+        {% for p in comus %}     
             <li>
                 {% if p.last_communicate %}{{ p.last_communicate }}{% endif %} {{ p.name }} 
                 <a href="{% url 'person:meet_update_person' p.id %}" class="btn btn-sm btn-secondary">만남</a>
