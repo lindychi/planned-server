@@ -23,8 +23,8 @@
         {% for p in meets %}
             <li>
                 {% if p.last_meet %}{{ p.last_meet }}{% endif %} {{ p.name }} 
-                <a href="{% url 'person:meet_update_person' p.id %}">최근에 봄</a>
-                <a href="{% url 'person:communicate_update_person' p.id %}">최근에 연락함</a>
+                <a href="{% url 'person:meet_update_person' p.id %}" class="btn btn-sm btn-secondary">만남</a>
+                <a href="{% url 'person:communicate_update_person' p.id %}" class="btn btn-sm btn-secondary">연락</a>
             </li>
         {% endfor %}
         </ul>   
@@ -35,8 +35,8 @@
         {% for p in comus %}
             <li>
                 {% if p.last_communicate %}{{ p.last_communicate }}{% endif %} {{ p.name }} 
-                <a href="{% url 'person:meet_update_person' p.id %}">최근에 봄</a>
-                <a href="{% url 'person:communicate_update_person' p.id %}">최근에 연락함</a>
+                <a href="{% url 'person:meet_update_person' p.id %}" class="btn btn-sm btn-secondary">만남</a>
+                <a href="{% url 'person:communicate_update_person' p.id %}" class="btn btn-sm btn-secondary">연락</a>
             </li>
         {% endfor %}
         </ul>   
