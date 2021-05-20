@@ -22,7 +22,7 @@
         <ul>
         {% for p in meets %}
             <li>
-                {% if p.last_meet %}{{ p.last_meet }}{% endif %} {{ p.name }} 
+                {% if p.last_meet %}{{ p.get_last_meet_date }}{% endif %} {{ p.name }} 
                 <a href="{% url 'person:meet_update_person' p.id %}" class="btn btn-sm btn-secondary">만남</a>
                 <a href="{% url 'person:communicate_update_person' p.id %}" class="btn btn-sm btn-secondary">연락</a>
             </li>
@@ -34,7 +34,7 @@
         <ul>
         {% for p in comus %}     
             <li>
-                {% if p.last_communicate %}{{ p.last_communicate }}{% endif %} {{ p.name }} 
+                {% if p.last_communicate %}{{ p.get_last_communicate_date }}{% endif %} {{ p.name }} 
                 <a href="{% url 'person:meet_update_person' p.id %}" class="btn btn-sm btn-secondary">만남</a>
                 <a href="{% url 'person:communicate_update_person' p.id %}" class="btn btn-sm btn-secondary">연락</a>
             </li>
