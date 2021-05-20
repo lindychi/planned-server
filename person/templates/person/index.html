@@ -22,7 +22,7 @@
         <ul>
         {% for p in meets %}
             <li>
-                {% if p.last_meet %}{{ p.last_meet }}{% endif %} {{ p.name }} 
+                {% if p.last_meet %}{{ p.get_last_meet_date }}{% endif %} {{ p.name }} 
                 <a href="{% url 'person:meet_update_person' p.id %}">최근에 봄</a>
                 <a href="{% url 'person:communicate_update_person' p.id %}">최근에 연락함</a>
             </li>
@@ -32,9 +32,9 @@
     <div class="flex-item">
         연락한 것 기준
         <ul>
-        {% for p in comus %}
+        {% for p in comus %}     
             <li>
-                {% if p.last_communicate %}{{ p.last_communicate }}{% endif %} {{ p.name }} 
+                {% if p.last_communicate %}{{ p.get_last_communicate_date }}{% endif %} {{ p.name }} 
                 <a href="{% url 'person:meet_update_person' p.id %}">최근에 봄</a>
                 <a href="{% url 'person:communicate_update_person' p.id %}">최근에 연락함</a>
             </li>

@@ -22,6 +22,12 @@ class Person(models.Model):
         self.last_communicate = timezone.now()
         self.save()
 
+    def get_last_meet_date(self):
+        return self.last_meet.strftime('%Y-%m-%d')
+    
+    def get_last_communicate_date(self):
+        return self.last_communicate.strftime('%Y-%m-%d')
+
 class PersonComment(models.Model):
     person = models.ForeignKey('Person', on_delete=models.CASCADE)
     comment = models.CharField(max_length=2048)
