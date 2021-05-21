@@ -144,3 +144,9 @@ def ajax_person_autocomplete(request):
         print(data)
         return HttpResponse(data, mimetype)
     return HttpResponse()
+
+def disconnect_repo(request, tid):
+    todo = Todo.objects.get(user=request.user, id=int(tid))
+    todo.disconnect_repo()
+
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])

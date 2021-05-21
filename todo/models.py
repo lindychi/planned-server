@@ -77,3 +77,7 @@ class Todo(models.Model):
                           "<a href='https://github.com/{}/issues/\g<1>'>\g<0></a>".format(repo),
                           self.name)
         return name
+
+    def disconnect_repo(self):
+        self.github_repo = ""
+        self.save()
