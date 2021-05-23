@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block body %}
+{% include 'todo/form/itertodo.html' %}
 <table class="table table-hover">
 {% for t in todo_list %}
     <tr>
