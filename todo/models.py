@@ -116,17 +116,17 @@ class Todo(models.Model):
         if self.last_update:
             delta = timezone.now() - self.last_update
             seconds = delta.total_seconds()
-            if seconds < 60:
+            if seconds <= 60:
                 return "{}초 전".format(seconds)
-            elif seconds < 3600:
+            elif seconds <= 3600:
                 return "{}분 전".format(int(seconds / 60))
-            elif seconds < 3600 * 24:
-                return "{}시간 전".format(int(seconds / (3600 * 24)))
-            elif delta.days < 7:
+            elif seconds <= 3600 * 24:
+                return "{}시간 전".format(int(seconds / (3600)))
+            elif delta.days <= 7:
                 return "{}일 전".format(delta.days)
-            elif delta.days < 30:
+            elif delta.days <= 30:
                 return "{}주 전".format(int(delta.days / 7))
-            elif delta.days < 365:
+            elif delta.days <= 365:
                 return "{}달 전".format(int(delta.days / 30))
             else:
                 return "{}년 전".format(int(delta.days / 365))
