@@ -87,3 +87,15 @@ class Todo(models.Model):
     def disconnect_repo(self):
         self.github_repo = ""
         self.save()
+
+    def complete(self):
+        self.complete = not self.complete
+        self.last_update = timezone.now()
+
+        if self.parent:
+            self.parent.complete()
+
+        for p in self.persons.all():
+            p.update_meet()
+
+        self.save()
