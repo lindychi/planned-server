@@ -7,6 +7,11 @@ from django.urls import reverse
 import random
 import re
 
+class IterTodo(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    name = models.CharField(max_length=1024)
+    delta = models.CharField(max_length=64)
+
 # Create your models here.
 class Todo(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -15,6 +20,7 @@ class Todo(models.Model):
     complete = models.BooleanField(default=False)
     github_repo = models.CharField(max_length=256, blank=True, default="")
     persons = models.ManyToManyField('person.Person', default=None)
+    itertodo = models.ForeignKey('IterTodo', on_delete=models.CASCADE, default=None, null=True)
 
     def __str__(self):
         return "[{0}] {1}".format(self.user, self.name)
