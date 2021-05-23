@@ -25,11 +25,7 @@ def todo_index(request):
 def complete_todo(request):
     if request.method == 'POST':
         todo = Todo.objects.get(id=request.POST['tid'])
-        todo.complete = not todo.complete
-        todo.save()
-
-        for p in todo.persons.all():
-            p.update_meet()
+        todo.complete()
 
         context = {'complete':todo.complete}
         return HttpResponse(json.dumps(context), content_type="application/json")
