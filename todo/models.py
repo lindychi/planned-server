@@ -92,10 +92,8 @@ class Todo(models.Model):
 
     def complete(self):
         self.complete = not self.complete
-        self.last_update = timezone.now()
-
-        if self.parent:
-            self.parent.complete()
+        if self.complete is True:
+            self.update_last_update()
 
         for p in self.persons.all():
             p.update_meet()
