@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from django.conf import settings
 from django.db import models
 from config.models import Color
@@ -13,6 +14,9 @@ class IterTodo(models.Model):
     name = models.CharField(max_length=1024)
     delta = models.CharField(max_length=64)
 
+    def __str__(self):
+        return "{} {}마다".format(self.name, self.delta)
+
 # Create your models here.
 class Todo(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -23,9 +27,13 @@ class Todo(models.Model):
     persons = models.ManyToManyField('person.Person', default=None, blank=True)
     itertodo = models.ForeignKey('IterTodo', on_delete=models.CASCADE, default=None, null=True)
     last_update = models.DateTimeField(default=None, null=True)
+    due_date = models.DateTimeField(default=None, null=True)
 
     def __str__(self):
-        return "[{0}] {1}".format(self.user, self.name)
+        if self.itertodo:
+            return "{} {}까지".format(self.name, self.due_date)
+        else:
+            return "{0} {1}에 마지막으로".format(self.name, self.last_update)
 
     def get_child(self):
         return Todo.objects.filter(parent=self)
@@ -94,15 +102,24 @@ class Todo(models.Model):
         self.github_repo = ""
         self.save()
 
-    def complete(self):
-        self.complete = not self.complete
-        if self.complete is True:
+    def get_complete(self):
+        return self.complete
+
+    def set_complete(self):
+        self.complete = not self.get_complete()
+        if self.get_complete() is True:
             self.update_last_update()
 
             for p in self.persons.all():
                 p.update_meet()
-
         self.save()
+
+        if self.itertodo and Todo.objects.filter(user=self.user, itertodo=self.itertodo, due_date__gt=self.due_date).count() <= 0:
+            date = self.due_date + timedelta(hours=9)
+            if self.itertodo.delta[1:] == "일":
+                date = date + timedelta(days=int(self.itertodo.delta[:1]))
+                date = datetime(date.year, date.month, date.day) - timedelta(hours=9)
+                Todo.objects.create(user=self.user, parent=self.parent, itertodo=self.itertodo, due_date=date, name=self.name)
 
     def update_last_update(self):
         self.last_update = timezone.now()
@@ -116,23 +133,44 @@ class Todo(models.Model):
         else:
             return ""
     
+    def time_gap(self, date):
+        delta = timezone.now() - date
+        seconds = delta.total_seconds()
+        token = "전"
+        if seconds < 0:
+            token = "후"
+        seconds = abs(seconds)
+        if seconds <= 60:
+            return "{}초 {}".format(int(seconds), token)
+        elif seconds <= 3600:
+            return "{}분 {}".format(int(seconds / 60), token)
+        elif seconds <= 3600 * 24:
+            return "{}시간 {}".format(int(seconds / (3600)), token)
+        elif delta.days <= 7:
+            return "{}일 {}".format(abs(delta.days), token)
+        elif delta.days <= 30:
+            return "{}주 {}".format(int(abs(delta.days) / 7), token)
+        elif delta.days <= 365:
+            return "{}달 {}".format(int(abs(delta.days) / 30), token)
+        else:
+            return "{}년 {}".format(int(abs(delta.days) / 365), token)
+
     def get_last_update_gap(self):
         if self.last_update:
-            delta = timezone.now() - self.last_update
-            seconds = delta.total_seconds()
-            if seconds <= 60:
-                return "{}초 전".format(seconds)
-            elif seconds <= 3600:
-                return "{}분 전".format(int(seconds / 60))
-            elif seconds <= 3600 * 24:
-                return "{}시간 전".format(int(seconds / (3600)))
-            elif delta.days <= 7:
-                return "{}일 전".format(delta.days)
-            elif delta.days <= 30:
-                return "{}주 전".format(int(delta.days / 7))
-            elif delta.days <= 365:
-                return "{}달 전".format(int(delta.days / 30))
-            else:
-                return "{}년 전".format(int(delta.days / 365))
+            return self.time_gap(self.last_update)
+        else:
+            return ""
+
+    def get_due_date_gap(self):
+        if self.due_date:
+            return self.time_gap(self.due_date)
+        else:
+            return ""
+
+    def get_time_gap(self):
+        if self.due_date:
+            return self.get_due_date_gap()
+        elif self.last_update:
+            return self.get_last_update_gap()
         else:
             return ""
