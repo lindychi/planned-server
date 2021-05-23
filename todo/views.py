@@ -146,3 +146,7 @@ def disconnect_repo(request, tid):
     todo.disconnect_repo()
 
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+def list(request):
+    todo_list = (Todo.objects.filter(user=request.user, parent=None) | Todo.objects.filter(user=request.user, itertodo__isnull=False)).order_by('last_update')
+    return render(request, 'todo/list.html', {'todo_list':todo_list})
