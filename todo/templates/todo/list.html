@@ -6,7 +6,7 @@
 {% for t in todo_list %}
     <tr>
         <td>{{ t.name }}</td>
-        <td></td>
+        <td>{{ t.get_last_update_gap }}</td>
     </tr>
 {% endfor %}
 </table>

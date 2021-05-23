@@ -95,7 +95,40 @@ class Todo(models.Model):
         if self.complete is True:
             self.update_last_update()
 
-        for p in self.persons.all():
-            p.update_meet()
+            for p in self.persons.all():
+                p.update_meet()
 
         self.save()
+
+    def update_last_update(self):
+        self.last_update = timezone.now()
+        self.save()
+        if self.parent:
+            self.parent.update_last_update()
+
+    def get_last_update(self):
+        if self.last_update:
+            return self.last_update.strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            return ""
+    
+    def get_last_update_gap(self):
+        if self.last_update:
+            delta = timezone.now() - self.last_update
+            seconds = delta.total_seconds()
+            if seconds < 60:
+                return "{}초 전".format(seconds)
+            elif seconds < 3600:
+                return "{}분 전".format(int(seconds / 60))
+            elif seconds < 3600 * 24:
+                return "{}시간 전".format(int(seconds / (3600 * 24)))
+            elif delta.days < 7:
+                return "{}일 전".format(delta.days)
+            elif delta.days < 30:
+                return "{}주 전".format(int(delta.days / 7))
+            elif delta.days < 365:
+                return "{}달 전".format(int(delta.days / 30))
+            else:
+                return "{}년 전".format(int(delta.days / 365))
+        else:
+            return ""
