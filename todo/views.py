@@ -2,7 +2,7 @@ import json
 from main_cal.models import Calendar, Schedule
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
-from .models import Todo
+from .models import IterTodo, Todo
 from person.models import Person
 from django.contrib.auth.models import User
 from config.models import Config
@@ -147,6 +147,28 @@ def disconnect_repo(request, tid):
 
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
+@login_required
 def list(request):
     todo_list = (Todo.objects.filter(user=request.user, parent=None) | Todo.objects.filter(user=request.user, itertodo__isnull=False)).order_by('last_update')
     return render(request, 'todo/list.html', {'todo_list':todo_list})
+
+@login_required
+def add_itertodo(request):
+    if request.method == "POST":
+        parent = None
+        name = ""
+        delta = ""
+        if 'parent' in request.POST and request.POST['parent']:
+            parent = Todo.objects.get(id=request.POST['parent'])
+        if 'name' in request.POST:
+            name = request.POST['name']
+        if 'delta' in request.POST:
+            delta = request.POST['delta']
+
+        if name:
+            itertodo = IterTodo.objects.create(user=request.user, name=name, delta=delta)
+            todo = Todo.objects.create(user=request.user, name=name, itertodo=itertodo)
+            if parent:
+                todo.set_parent(parent)
+
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])

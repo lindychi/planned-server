@@ -20,7 +20,7 @@ class Todo(models.Model):
     name = models.CharField(max_length=2048)
     complete = models.BooleanField(default=False)
     github_repo = models.CharField(max_length=256, blank=True, default="")
-    persons = models.ManyToManyField('person.Person', default=None)
+    persons = models.ManyToManyField('person.Person', default=None, blank=True)
     itertodo = models.ForeignKey('IterTodo', on_delete=models.CASCADE, default=None, null=True)
     last_update = models.DateTimeField(default=None, null=True)
 
@@ -29,6 +29,10 @@ class Todo(models.Model):
 
     def get_child(self):
         return Todo.objects.filter(parent=self)
+
+    def set_parent(self, parent):
+        self.parent = parent
+        self.save()
 
     def connect_to_calendar(self):
         color = random.choice(Color.objects.all())

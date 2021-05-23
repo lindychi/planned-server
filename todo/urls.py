@@ -15,6 +15,7 @@ urlpatterns = [
     path('todo/remove_person/<int:tid>/<int:pid>', views.remove_person_from_todo, name="remove_person_from_todo"),
     path('todo/disconnect/repo/<int:tid>/', views.disconnect_repo, name="disconnect_repo"),
     path('list/', views.list, name="list"),
+    path('add_itertodo/', views.add_itertodo, name="add_itertodo"),
 
     path('ajax/complete/', views.complete_todo, name='complete_todo'),
     path('ajax/delete_todo/', views.delete_todo, name='delete_todo'),
