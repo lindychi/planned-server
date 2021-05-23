@@ -1,0 +1,39 @@
+<button type="button" class="btn btn-success m-2" data-bs-toggle="modal" data-bs-target="#itertodo-form">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
+        <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"></path>
+        <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"></path>
+    </svg>
+    반복 할 일 추가
+</button>
+
+<div class="modal fade" id="itertodo-form" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">반복 할 일 추가</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form autocomplete="off" id="itertodo-form-form" action="{% url 'todo:add_itertodo' %}" method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="itertodo-parent" class="form-label">상위 할 일</label>
+                    <input class="form-control" type="text" id="itertodo-parent" name="parent">
+                </div>
+                <div class="mb-3">
+                    <label for="itertodo-name" class="form-label">할 일</label>
+                    <input class="form-control" type="text" id="itertodo-name" name="name">
+                </div>
+                <div class="mb-3">
+                    <label for="itertodo-delta" class="form-label">주기</label>
+                    <input class="form-control" type="text" id="itertodo-delta" name="delta" placeholder="*일, *주, *요일">
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+            <button type="button" class="btn btn-primary" onclick="document.getElementById('itertodo-form-form').submit();">추가</button>
+        </div>
+        </div>
+    </div>
+</div>

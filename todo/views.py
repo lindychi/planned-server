@@ -2,7 +2,7 @@ import json
 from main_cal.models import Calendar, Schedule
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
-from .models import Todo
+from .models import IterTodo, Todo
 from person.models import Person
 from django.contrib.auth.models import User
 from config.models import Config
@@ -25,14 +25,15 @@ def todo_index(request):
 def complete_todo(request):
     if request.method == 'POST':
         todo = Todo.objects.get(id=request.POST['tid'])
-        todo.complete = not todo.complete
-        todo.save()
+        todo.set_complete()
 
-        for p in todo.persons.all():
-            p.update_meet()
-
-        context = {'complete':todo.complete}
+        context = {'complete':todo.get_complete()}
         return HttpResponse(json.dumps(context), content_type="application/json")
+
+def complete_todo_get(request, tid):
+    todo = Todo.objects.get(id=tid)
+    todo.set_complete()
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 def delete_todo(request):
     if request.method == 'POST':
@@ -148,5 +149,33 @@ def ajax_person_autocomplete(request):
 def disconnect_repo(request, tid):
     todo = Todo.objects.get(user=request.user, id=int(tid))
     todo.disconnect_repo()
+
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+@login_required
+def list(request):
+    todo_list = (Todo.objects.filter(user=request.user, parent=None, last_update__lte=timezone.now()) | Todo.objects.filter(user=request.user, itertodo__isnull=False, due_date__lte=timezone.now())).order_by('complete', 'due_date', 'last_update')
+    # todo_list = (Todo.objects.filter(user=request.user, parent=None) | Todo.objects.filter(user=request.user, itertodo__isnull=False)).order_by('complete', 'due_date', 'last_update')
+    return render(request, 'todo/list.html', {'todo_list':todo_list})
+
+@login_required
+def add_itertodo(request):
+    if request.method == "POST":
+        parent = None
+        name = ""
+        delta = ""
+        if 'parent' in request.POST and request.POST['parent']:
+            parent = Todo.objects.get(id=request.POST['parent'])
+        if 'name' in request.POST:
+            name = request.POST['name']
+        if 'delta' in request.POST:
+            delta = request.POST['delta']
+
+        # 이름이 입력되지 않았을경우엔 처리하지 않음
+        if name:
+            itertodo = IterTodo.objects.create(user=request.user, name=name, delta=delta)
+            todo = Todo.objects.create(user=request.user, name=name, itertodo=itertodo, due_date=timezone.now())
+            if parent:
+                todo.set_parent(parent)
 
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
