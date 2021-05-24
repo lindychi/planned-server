@@ -122,21 +122,30 @@ class Todo(models.Model):
     def get_complete(self):
         return self.complete
 
+    def end_last_schedule(self):
+        schedule = Schedule.objects.filter(todo=self).last()
+        if schedule.end_date == None:
+            schedule.set_end_date_now()
+
     def set_complete(self):
         self.complete = not self.get_complete()
         if self.get_complete() is True:
             self.update_last_update()
+            self.end_last_schedule()
 
             for p in self.persons.all():
                 p.update_meet()
         self.save()
 
+        # 반복 할일일 경우의 처리
         if self.itertodo and Todo.objects.filter(user=self.user, itertodo=self.itertodo, due_date__gt=self.due_date).count() <= 0:
+            # 좀 더 나중의 시간을 기준으로 다음 일정 추가
             if self.due_date >= timezone.now():
                 date = self.due_date + timedelta(hours=9)
             else:
                 date = timezone.now() + timedelta(hours=9)
 
+            # timedelta 처리 추가
             if self.itertodo.delta[1:] == "일":
                 date = date + timedelta(days=int(self.itertodo.delta[:1]))
                 date = datetime(date.year, date.month, date.day) - timedelta(hours=9)

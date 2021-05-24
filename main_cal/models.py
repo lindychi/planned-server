@@ -40,6 +40,10 @@ class Schedule(models.Model):
     def is_end(self):
         return (self.end_date != None)
 
+    def set_end_date_now(self):
+        self.end_date = timezone.now()
+        self.save()
+
 def get_datetime_str(input):
     # return (input + datetime.timedelta(hours=9)).strftime('%Y-%m-%d %H:%M:%S')
     return input.strftime('%Y-%m-%d %H:%M:%S%z')
