@@ -85,10 +85,7 @@ def add_new_schedule(request, tid):
 
 def end_last_schedule(request, tid):
     todo = Todo.objects.get(id=tid)
-
-    schedule = Schedule.objects.filter(todo=todo).last()
-    schedule.end_date = timezone.now()
-    schedule.save()
+    todo.end_last_schedule()
 
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
