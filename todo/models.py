@@ -17,6 +17,12 @@ class IterTodo(models.Model):
     def __str__(self):
         return "{} {}마다".format(self.name, self.delta)
 
+def rand_rgb():
+    return random.randint(0, 255)
+
+def color_gen():
+    return "#{:02X}{:02X}{:02X}".format(rand_rgb(), rand_rgb(), rand_rgb())
+
 # Create your models here.
 class Todo(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -43,7 +49,14 @@ class Todo(models.Model):
         self.save()
 
     def connect_to_calendar(self):
-        color = random.choice(Color.objects.all())
+        try:
+            color = random.choice(Color.objects.all())
+        except Color.DoesNotExist:
+            color = Color.objects.create(user=self.user, color=color_gen(), bg_color=color_gen(),
+                                         drag_bg_color=color_gen(), border_color=color_gen())
+        except IndexError:
+            color = Color.objects.create(user=self.user, color=color_gen(), bg_color=color_gen(),
+                                         drag_bg_color=color_gen(), border_color=color_gen())
 
         calendar = Calendar.objects.create(user=self.user, todo=self, color=color, title=self.name)
         calendar.save()
@@ -54,6 +67,10 @@ class Todo(models.Model):
         while todo.parent:
             todo = todo.parent
 
+        try:
+            calendar = todo.calendar
+        except Calendar.DoesNotExist:
+            self.connect_to_calendar()
         return todo.calendar
 
     def last_schedule(self):
