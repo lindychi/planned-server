@@ -132,7 +132,11 @@ class Todo(models.Model):
         self.save()
 
         if self.itertodo and Todo.objects.filter(user=self.user, itertodo=self.itertodo, due_date__gt=self.due_date).count() <= 0:
-            date = self.due_date + timedelta(hours=9)
+            if self.due_date >= timezone.now():
+                date = self.due_date + timedelta(hours=9)
+            else:
+                date = timezone.now() + timedelta(hours=9)
+
             if self.itertodo.delta[1:] == "일":
                 date = date + timedelta(days=int(self.itertodo.delta[:1]))
                 date = datetime(date.year, date.month, date.day) - timedelta(hours=9)
