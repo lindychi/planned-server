@@ -20,7 +20,7 @@
 
 {% block body %} 
 <div class="d-flex flex-row">
-    <div class="flex-item">
+    <div class="flex-item m-3">
         <div id="menu">
             <span id="menu-navi">
             <button type="button" class="btn btn-secondary btn-sm move-today" data-action="move-today">Today</button>
@@ -42,7 +42,7 @@
         <div id="calendar"></div>
     </div>
 
-    <div class="flex-item">
+    <div class="flex-item m-3">
         <h1>{% if parent %}{{ parent.get_parents_link|safe }}{{ parent.name }}{% else %}할일의 리스트{% endif %}</h1>
         <button id="complete_display_toggle">완료한일 가리기</button></br>
         <div>
