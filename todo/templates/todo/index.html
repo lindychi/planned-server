@@ -472,26 +472,28 @@
         });
     }
 
+    cal.createSchedules([
     {% for s in schedules %}
-    cal.createSchedules([{
-        id: '{{ s.id }}',
-        calendarId: '{{ s.calendar.id}}',
-        title: '{{ s.title }}',
-        isAllDay: '{{ s.isAllDay }}',
-        start: '{{ s.get_start_date }}',
-        end: '{{ s.get_end_date }}',
-        category: '{{ s.category }}',
-        dueDateClass: '',
-        color: '{{ s.calendar.color.color }}',
-        bgColor: '{{ s.calendar.color.bg_color }}',
-        dragBgColor: '{{ s.calendar.color.bg_color }}',
-        borderColor: '{{ s.calendar.color.border_color }}',
-        raw: {
-            location: location
+        {
+            id: '{{ s.id }}',
+            calendarId: '{{ s.calendar.id}}',
+            title: '{{ s.title }}',
+            isAllDay: '{{ s.isAllDay }}',
+            start: '{{ s.get_start_date }}',
+            end: '{{ s.get_end_date }}',
+            category: '{{ s.category }}',
+            dueDateClass: '',
+            color: '{{ s.calendar.color.color }}',
+            bgColor: '{{ s.calendar.color.bg_color }}',
+            dragBgColor: '{{ s.calendar.color.bg_color }}',
+            borderColor: '{{ s.calendar.color.border_color }}',
+            raw: {
+                location: location
+            },
+            state: 'Busy'
         },
-        state: 'Busy'
-    }]);
     {% endfor %}
+    ]);
 
     function setRenderRangeText() {
         var renderRange = document.getElementById('renderRange');

@@ -23,7 +23,8 @@ def todo_index(request):
     else:
         todos = Todo.objects.filter(parent=None)
 
-    schedules = Schedule.objects.filter(user=request.user, end_date__gte=timezone.now() - datetime.timedelta(days=7))
+    my_schedules = Schedule.objects.filter(user=request.user)
+    schedules = (my_schedules.filter(end_date__gte=timezone.now() - datetime.timedelta(days=7)) | my_schedules.filter(end_date=None))
 
     return render(request, 'todo/index.html', {'todos':todos, 'config':config, 'schedules':schedules})
 
