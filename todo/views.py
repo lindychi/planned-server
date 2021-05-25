@@ -1,4 +1,5 @@
 import json
+import datetime
 from main_cal.models import Calendar, Schedule
 from django.http.response import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
@@ -12,13 +13,17 @@ from django.contrib.auth.decorators import login_required
 # Create your views here.
 @login_required
 def todo_index(request):
-    todos = Todo.objects.filter(parent=None)
     try:
         config = Config.objects.get(user=request.user)
     except Config.DoesNotExist:
         config = Config.objects.create(user=request.user)
+        
+    if not config.show_todo_complete:
+        todos = Todo.objects.filter(parent=None, complete=False)
+    else:
+        todos = Todo.objects.filter(parent=None)
 
-    schedules = Schedule.objects.filter(user=request.user)
+    schedules = Schedule.objects.filter(user=request.user, end_date__gte=timezone.now() - datetime.timedelta(days=7), start_date__gte=timezone.now() + datetime.timedelta(days=7))
 
     return render(request, 'todo/index.html', {'todos':todos, 'config':config, 'schedules':schedules})
 
