@@ -109,7 +109,7 @@
     $('#add_person_person').autocomplete({
         source: "{% url 'todo:ajax_person_autocomplete' %}",
     });
-
+    
     $('#update_todo_parent_form_parent').autocomplete({
         source: "{% url 'todo:ajax_todo_autocomplete' %}",
     })

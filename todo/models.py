@@ -212,5 +212,6 @@ class Todo(models.Model):
             return ""
 
     def set_parent(self, parent):
+        self.calendar.delete()
         self.parent = parent
         self.save()
