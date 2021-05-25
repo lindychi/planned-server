@@ -204,3 +204,13 @@ class Todo(models.Model):
             return self.get_last_update_gap()
         else:
             return ""
+
+    def get_parent_text(self):
+        if self.parent:
+            return self.parent.name
+        else:
+            return ""
+
+    def set_parent(self, parent):
+        self.parent = parent
+        self.save()

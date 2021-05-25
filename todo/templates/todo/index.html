@@ -58,6 +58,14 @@
         </div>
 
         {% if parent %}
+        상위 할 일
+        <form method="POST" action="{% url 'todo:update_todo_parent' %}" class="form-inline" autocomplete="off">
+            {% csrf_token %}
+            <input type="hidden" name="tid" value="{{ parent.id }}" class="form-group">
+            <input type="text" name="parent" value="{{ parent.get_parent_text }}" class="form-group" id="update_todo_parent_form_parent">
+            <input type="submit" value="상위 할일 변경" class="btn btn-success btn-sm">
+        </form>
+
         연관 인물
         <form method="POST" action="{% url 'todo:add_person_to_todo' %}">
             {% csrf_token %}
@@ -101,6 +109,10 @@
     $('#add_person_person').autocomplete({
         source: "{% url 'todo:ajax_person_autocomplete' %}",
     });
+
+    $('#update_todo_parent_form_parent').autocomplete({
+        source: "{% url 'todo:ajax_todo_autocomplete' %}",
+    })
 
     $('.delete_todo').click(function() {
         var tid = $(this).attr('name')

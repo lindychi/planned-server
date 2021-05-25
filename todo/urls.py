@@ -17,9 +17,11 @@ urlpatterns = [
     path('list/', views.list, name="list"),
     path('add_itertodo/', views.add_itertodo, name="add_itertodo"),
     path('complete_todo_get/<int:tid>/', views.complete_todo_get, name='complete_todo_get'),
+    path('update_todo_parent/', views.update_todo_parent, name='update_todo_parent'),
 
     path('ajax/complete/', views.complete_todo, name='complete_todo'),
     path('ajax/delete_todo/', views.delete_todo, name='delete_todo'),
     path('ajax/add_todo/', views.add_todo, name='add_todo'),
-    path('ajax/person/autocomplete/', views.ajax_person_autocomplete, name='ajax_person_autocomplete')
+    path('ajax/person/autocomplete/', views.ajax_person_autocomplete, name='ajax_person_autocomplete'),
+    path('ajax/todo/autocomplete/', views.ajax_todo_autocomplete, name='ajax_todo_autocomplete'),
 ]

@@ -132,6 +132,23 @@ def remove_person_from_todo(request, tid, pid):
     todo.remove_person(person)
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
+def ajax_todo_autocomplete(request):
+    if request.is_ajax() and 'term' in request.GET:
+        print(request.GET['term'])
+        todos = Todo.objects.filter(name__icontains=request.GET['term'])[:10]
+        results = []
+        for p in todos:
+            p_json = {}
+            p_json['id'] = p.id
+            p_json['label'] = p.name
+            p_json['value'] = p.name
+            results.append(p_json)
+        data = json.dumps(results)
+        mimetype = 'application/json'
+        print(data)
+        return HttpResponse(data, mimetype)
+    return HttpResponse()
+
 def ajax_person_autocomplete(request):
     if request.is_ajax() and 'term' in request.GET:
         print(request.GET['term'])
@@ -180,5 +197,17 @@ def add_itertodo(request):
             todo = Todo.objects.create(user=request.user, name=name, itertodo=itertodo, due_date=timezone.now())
             if parent:
                 todo.set_parent(parent)
+
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+def update_todo_parent(request):
+    if request.method == "POST":
+        tid = request.POST['tid']
+        parent = request.POST['parent']
+
+        todo = Todo.objects.get(user=request.user, id=int(tid))
+        parent = Todo.objects.get(user=request.user, name=parent)
+
+        todo.set_parent(parent)
 
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
