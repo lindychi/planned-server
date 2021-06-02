@@ -18,10 +18,10 @@ def todo_index(request):
     except Config.DoesNotExist:
         config = Config.objects.create(user=request.user)
         
-    if not config.show_todo_complete:
-        todos = Todo.objects.filter(parent=None, complete=False)
-    else:
+    if config.show_todo_complete is True:
         todos = Todo.objects.filter(parent=None)
+    else:
+        todos = Todo.objects.filter(parent=None, complete=False)
 
     my_schedules = Schedule.objects.filter(user=request.user)
     schedules = (my_schedules.filter(end_date__gte=timezone.now() - datetime.timedelta(days=7)) | my_schedules.filter(end_date=None))
