@@ -36,3 +36,10 @@ def change_random_color(request, cid):
     calendar = Calendar.objects.get(id=cid)
     calendar.change_random_color()
     return HttpResponseRedirect(reverse('todo:index'))
+
+def ajax_delete_schedule(request):
+    if request.method == 'POST':
+        if 'schedule_id' in request.POST:
+            schedule = Schedule.objects.get(id=request.POST['schedule_id'])
+            schedule.delete()
+    return HttpResponse()

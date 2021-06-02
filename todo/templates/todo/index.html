@@ -311,7 +311,22 @@
             refreshScheduleVisibility();
         },
         'beforeDeleteSchedule': function(e) {
+            var schedule = e.schedule;
+            var data = {}
+
+            data['csrfmiddlewaretoken'] = '{{ csrf_token }}'
+            data['schedule_id'] = schedule.id
+
             console.log('beforeDeleteSchedule', e);
+            $.ajax({
+                type: "POST",
+                url: "{% url 'calendar:ajax_delete_schedule' %}",
+                data: data,
+                dataType: "json",
+                success: function(response) {
+                    alert(response)
+                }
+            })
             cal.deleteSchedule(e.schedule.id, e.schedule.calendarId);
         },
         'afterRenderSchedule': function(e) {
