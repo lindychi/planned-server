@@ -20,11 +20,18 @@
     <div class="flex-item">
         만난것 기준
         <ul>
-        {% for p in meets %}
+        {% for k, v in meets.items %}
             <li>
-                {% if p.last_meet %}{{ p.get_last_meet_date }}{% endif %} {{ p.name }} 
-                <a href="{% url 'person:meet_update_person' p.id %}" class="btn btn-sm btn-secondary">만남</a>
-                <a href="{% url 'person:communicate_update_person' p.id %}" class="btn btn-sm btn-secondary">연락</a>
+                {{ k }}
+                <ul>
+                    {% for p in v %}
+                    <li>
+                        {% if p.last_meet %}{{ p.get_last_meet_date }}{% endif %} {{ p.name }} 
+                        <a href="{% url 'person:meet_update_person' p.id %}" class="btn btn-sm btn-secondary">만남</a>
+                        <a href="{% url 'person:communicate_update_person' p.id %}" class="btn btn-sm btn-secondary">연락</a>
+                    </li>
+                    {% endfor %}
+                </ul>
             </li>
         {% endfor %}
         </ul>   
@@ -32,11 +39,18 @@
     <div class="flex-item">
         연락한 것 기준
         <ul>
-        {% for p in comus %}     
+        {% for k, v in comus.items %}     
             <li>
-                {% if p.last_communicate %}{{ p.get_last_communicate_date }}{% endif %} {{ p.name }} 
-                <a href="{% url 'person:meet_update_person' p.id %}" class="btn btn-sm btn-secondary">만남</a>
-                <a href="{% url 'person:communicate_update_person' p.id %}" class="btn btn-sm btn-secondary">연락</a>
+                {{ k }}
+                <ul>
+                    {% for p in v %}
+                    <li>
+                        {% if p.last_communicate %}{{ p.get_last_communicate_date }}{% endif %} {{ p.name }} 
+                        <a href="{% url 'person:meet_update_person' p.id %}" class="btn btn-sm btn-secondary">만남</a>
+                        <a href="{% url 'person:communicate_update_person' p.id %}" class="btn btn-sm btn-secondary">연락</a>
+                    </li>
+                    {% endfor %}
+                </ul>
             </li>
         {% endfor %}
         </ul>   

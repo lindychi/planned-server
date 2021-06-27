@@ -23,10 +23,16 @@ class Person(models.Model):
         self.save()
 
     def get_last_meet_date(self):
-        return self.last_meet.strftime('%Y-%m-%d')
+        if self.last_meet:
+            return self.last_meet.strftime('%Y-%m-%d')
+        else:
+            return "1991-01-01"
     
     def get_last_communicate_date(self):
-        return self.last_communicate.strftime('%Y-%m-%d')
+        if self.last_communicate:
+            return self.last_communicate.strftime('%Y-%m-%d')
+        else:
+            return "1991-01-01"
 
 class PersonComment(models.Model):
     person = models.ForeignKey('Person', on_delete=models.CASCADE)
